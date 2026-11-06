@@ -1,0 +1,29 @@
+# Slide môn học chỉ lưu hành nội bộ, không đưa lên repo
+docs/slide/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+cowrie-env/
+.ipynb_checkpoints/
+
+# Máy ảo, ảnh đĩa
+*.ova
+*.vdi
+*.vmdk
+*.qcow2
+*.iso
+
+# Bí mật, khóa
+.env
+*.key
+*.pem
+ssh_host_*
+
+# Hệ điều hành, OneDrive, Office
+.DS_Store
+Thumbs.db
+desktop.ini
+~$*
