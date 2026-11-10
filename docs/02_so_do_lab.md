@@ -1,6 +1,6 @@
 # Sơ đồ lab và chính sách cách ly (WP-02)
 
-**Người làm:** TV1 · **Trạng thái:** bản thiết kế, chờ TV3 review theo checklist RV-THIẾT-KẾ · Các ô `<...>` điền khi dựng thật
+**Người làm:** TV1 · **Trạng thái:** đã dựng thật đúng thiết kế, chờ TV3 review theo checklist RV-THIẾT-KẾ · `<SUBNET>` = `192.168.239` (mục 8)
 
 ## 1. Máy và tài nguyên
 
@@ -105,9 +105,10 @@ Theo nguyên tắc defense in depth: một lớp hỏng thì vẫn còn lớp kh
 2. Sau mỗi lượt thử, từ máy host chạy `scp` qua cổng 22 để lấy log và thư mục `tty/` về `data/raw/RUN-xx/`.
 3. Tính SHA-256 và lưu vào `SHA256SUMS`. Từ đây không sửa file trong `raw/`.
 
-## 8. Còn phải điền khi dựng thật
+## 8. Thông số thực tế khi dựng
 
-- [ ] Phiên bản VMware Workstation
-- [ ] Dải `<SUBNET>` của VMnet1
-- [ ] Đường dẫn log thực tế trên VM-H
-- [ ] Windows host đã có Telnet client chưa (Windows Features → Telnet Client, hoặc dùng PuTTY)
+- [x] VMware Workstation 25H2
+- [x] `<SUBNET>` = `192.168.239`: host `192.168.239.1`, VM-A `192.168.239.10`, VM-H `192.168.239.20`
+- [x] Log trên VM-H: `/home/cowrie/var/log/cowrie/cowrie.json` (và `cowrie.log`), TTY ở `/home/cowrie/var/lib/cowrie/tty/`
+- [ ] Telnet Client của Windows chưa bật. Smoke test dùng Python `telnetlib` trên Windows thay cho Telnet Client; TV4 cần bật Telnet Client hoặc dùng PuTTY nếu chạy KB-05 bằng tay
+- [x] Lab chạy đúng thiết kế ở mục 2–6. Ngoài thiết kế, đã tắt `[ssh] forwarding` của Cowrie và bỏ Sound Card/USB của hai VM. Kiểm tra cách ly: `evidence/kiem_tra_cach_ly_TV1.md`

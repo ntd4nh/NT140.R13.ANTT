@@ -1,0 +1,3 @@
+# Log gốc phải giữ nguyên từng byte để SHA256SUMS luôn khớp.
+evidence/** -text
+data/raw/** -text

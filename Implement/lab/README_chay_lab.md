@@ -323,6 +323,17 @@ grep -nE '^\[(output_|proxy|llm)|^backend|^enabled' ~/etc/cowrie.cfg
 
 Chụp màn hình kết quả này để làm minh chứng.
 
+### 7.4. Tắt chuyển tiếp cổng qua SSH
+
+Mặc định Cowrie để `forwarding = true`: kẻ tấn công có thể nhờ honeypot mở kết nối tới máy khác. Tắt đi:
+
+```bash
+sed -i '/^\[ssh\]/,/^\[/ s/^forwarding = true/forwarding = false/' ~/etc/cowrie.cfg
+grep -n '^forwarding' ~/etc/cowrie.cfg
+```
+
+**Bạn sẽ thấy:** `forwarding = false`.
+
 ---
 
 ## Bước 8 – Chạy thử Cowrie ngay trên VM-H
@@ -739,15 +750,23 @@ sha256sum -c SHA256SUMS
 
 | Mục | Giá trị |
 | --- | --- |
-| Phiên bản VMware Workstation (Help → About) | |
-| `<SUBNET>` (VMnet1) | |
-| Phiên bản Ubuntu (`lsb_release -d`) và Python trên VM-H | |
-| Phiên bản Cowrie (`pip show cowrie`) | |
-| Tên card mạng VM-H / VM-A | |
-| Đường dẫn log thực tế trên VM-H | |
-| Tên file JSON sau khi xoay vòng (nếu thấy) | |
-| Plugin output đang bật (Bước 7.3) | |
-| Lệnh `cowrie status` có chạy được không | |
+| Phiên bản VMware Workstation (Help → About) | Workstation 25H2 |
+| `<SUBNET>` (VMnet1) | `192.168.239` (host `.1`, VM-A `.10`, VM-H `.20`) |
+| Phiên bản Ubuntu (`lsb_release -d`) và Python trên VM-H | Ubuntu 24.04.5 LTS, Python 3.12.3 (VM-A giống hệt) |
+| Phiên bản Cowrie (`pip show cowrie`) | 3.1.6 |
+| Tên card mạng VM-H / VM-A | `ens32` / `ens32` |
+| Đường dẫn log thực tế trên VM-H | `/home/cowrie/var/log/cowrie/cowrie.json` và `cowrie.log`; TTY ở `/home/cowrie/var/lib/cowrie/tty/` |
+| Tên file JSON sau khi xoay vòng (nếu thấy) | Chưa thấy (chưa có lượt nào chạy qua nửa đêm) |
+| Plugin output đang bật (Bước 7.3) | Chỉ `[output_jsonlog]`; mọi `[output_...]` khác `enabled = false` |
+| Lệnh `cowrie status` có chạy được không | `cowrie start`, `stop`, `restart` chạy được bằng user `cowrie`. `status` chưa kiểm bằng user `cowrie` (chạy bằng `labadmin` thì báo lỗi quyền) |
+
+**Khác biệt so với hướng dẫn, gặp khi dựng thật ngày 2026-11-10:**
+- Card mạng tên `ens32`, không phải `ens33`. Lệnh ở 9.3 tự tìm tên card nên vẫn đúng.
+- Trình cài chỉ dành 10 GB cho ổ `/` dù đĩa 20 GB. Đã gộp phần còn trống bằng `sudo lvextend -r -l +100%FREE /dev/ubuntu-vg/ubuntu-lv` ở Bước 5, khi còn mạng NAT.
+- Đã tắt `[ssh] forwarding` (Bước 7.4).
+- `labadmin` được thêm vào nhóm `cowrie` (`sudo usermod -aG cowrie labadmin`), và thư mục `var`, `etc` của Cowrie được bỏ quyền ghi của nhóm (`sudo chmod -R g-w,o-rwx /home/cowrie/var /home/cowrie/etc`). Nhờ vậy `labadmin` đọc và `scp` log trực tiếp được, không cần `sudo cp` ở 15.1.
+- Bỏ Sound Card và USB Controller của cả hai VM. Bật **VM → Settings → Options → VMware Tools → Synchronize guest time with host**, vì VM không có Internet nên không tự chỉnh giờ được.
+- Smoke test chạy bằng script (`sshpass` trên VM-A, Python `telnetlib` cho Telnet) thay vì gõ tay. Chi tiết ở `evidence/smoke_test/README.md`.
 
 Sau đó:
 1. Chép cấu hình **đã bỏ thông tin nhạy cảm** (`cowrie.cfg`; `userdb.txt` chỉ chứa mật khẩu giả) vào `Implement/lab/cowrie/`.
@@ -778,7 +797,7 @@ ss -ltn | grep -E ':2222|:2223'
 
 ## Phụ lục 3 – Quay về snapshot khi hỏng
 
-VMware → chọn VM → **VM → Snapshot → Revert to Snapshot** → chọn `sau-cai-cowrie` → **Yes**.
+VMware → chọn VM → **VM → Snapshot → Snapshot Manager** → chọn snapshot (VM-H: `sau-smoke-test` là bản mới nhất, `sau-cai-cowrie` là bản trước khi tắt `forwarding`; VM-A: `sau-cai-dat`) → **Go To** → **Yes**.
 
 Mọi thay đổi sau thời điểm snapshot sẽ mất, kể cả log. Lấy log về repo trước khi quay về.
 
@@ -813,11 +832,11 @@ Sau khi đổi, thử lại một lần gõ sai và một lần gõ đúng như 
 
 ## Phụ lục 6 – Checklist hoàn thành WP-03
 
-- [ ] Cowrie chạy bằng user `cowrie`, mở cổng 2222 và 2223
-- [ ] Có `userdb.txt` riêng; gõ sai thì bị từ chối
-- [ ] VM-H chỉ còn card VMnet1, IP `<SUBNET>.20`, ufw bật; đã tắt Shared Folders, kéo-thả và copy-paste
-- [ ] Snapshot `sau-cai-cowrie` (VM-H) và `sau-cai-dat` (VM-A)
-- [ ] Smoke test đạt; log lưu ở `evidence/smoke_test/` kèm `SHA256SUMS` → gửi **BG-02** cho TV2
-- [ ] Kiểm tra cách ly đạt (Bước 14)
-- [ ] Bảng Bước 16 đã điền; cấu hình đã làm sạch nằm trong `Implement/lab/cowrie/` → gửi **BG-03** cho TV3
-- [ ] Danh sách yếu tố mồi (tên máy, phiên bản SSH công bố, hệ thống file giả, `userdb`) → gửi **BG-08** cho TV3
+- [x] Cowrie chạy bằng user `cowrie`, mở cổng 2222 và 2223
+- [x] Có `userdb.txt` riêng; gõ sai thì bị từ chối
+- [x] VM-H chỉ còn card VMnet1, IP `<SUBNET>.20`, ufw bật; đã tắt Shared Folders, kéo-thả và copy-paste
+- [ ] Snapshot `sau-cai-cowrie` và `sau-smoke-test` (VM-H), `sau-cai-dat` (VM-A)
+- [x] Smoke test đạt; log lưu ở `evidence/smoke_test/` kèm `SHA256SUMS` → gửi **BG-02** cho TV2
+- [x] Kiểm tra cách ly đạt (Bước 14): `evidence/kiem_tra_cach_ly_TV1.md`
+- [x] Bảng Bước 16 đã điền; cấu hình đã làm sạch nằm trong `Implement/lab/cowrie/` → gửi **BG-03** cho TV3
+- [x] Danh sách yếu tố mồi (tên máy, phiên bản SSH công bố, hệ thống file giả, `userdb`): `Implement/lab/cowrie/README.md` → gửi **BG-08** cho TV3
