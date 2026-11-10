@@ -104,7 +104,7 @@ Thấy được khi chạy thử, chi tiết ở `Implement/lab/cowrie/README.md
 | Cowrie mặc định cho phép chuyển tiếp cổng SSH | Đã tắt; kiểm tra lại thì Cowrie từ chối (`unknown channel: direct-tcpip`) |
 | VM không có Internet nên không tự chỉnh giờ được | Bật đồng bộ giờ với host của VMware; ba máy lệch dưới 1 giây |
 | Các phiên gõ giống nhau dùng chung một file TTY | Đã báo TV2 cách ghép bằng trường `ttylog` |
-| Telnet Client của Windows chưa bật | Smoke test dùng Python thay thế; cần bật trước khi chạy KB-05 bằng tay |
+| Telnet Client của Windows chưa bật lúc smoke test | Smoke test dùng Python thay thế; sau đó đã bật Telnet Client để chạy KB-05 bằng tay |
 
 ### Phần 7 – Dự định tiếp theo của TV1
 

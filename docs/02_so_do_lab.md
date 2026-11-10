@@ -110,5 +110,5 @@ Theo nguyên tắc defense in depth: một lớp hỏng thì vẫn còn lớp kh
 - [x] VMware Workstation 25H2
 - [x] `<SUBNET>` = `192.168.239`: host `192.168.239.1`, VM-A `192.168.239.10`, VM-H `192.168.239.20`
 - [x] Log trên VM-H: `/home/cowrie/var/log/cowrie/cowrie.json` (và `cowrie.log`), TTY ở `/home/cowrie/var/lib/cowrie/tty/`
-- [ ] Telnet Client của Windows chưa bật. Smoke test dùng Python `telnetlib` trên Windows thay cho Telnet Client; TV4 cần bật Telnet Client hoặc dùng PuTTY nếu chạy KB-05 bằng tay
+- [x] Telnet Client của Windows đã bật (`Enable-WindowsOptionalFeature -Online -FeatureName TelnetClient`). Smoke test chạy trước đó nên dùng Python `telnetlib` thay thế
 - [x] Lab chạy đúng thiết kế ở mục 2–6. Ngoài thiết kế, đã tắt `[ssh] forwarding` của Cowrie và bỏ Sound Card/USB của hai VM. Kiểm tra cách ly: `evidence/kiem_tra_cach_ly_TV1.md`
