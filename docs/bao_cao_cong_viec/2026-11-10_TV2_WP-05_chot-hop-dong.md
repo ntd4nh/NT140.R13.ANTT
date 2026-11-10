@@ -1,8 +1,8 @@
 # WP-05 – Chốt đề xuất hợp đồng dữ liệu (TV2)
 
-**Ngày:** 2026-11-10 · **Người làm:** TV2 · **Trạng thái:** Xong một phần
+**Ngày:** 2026-11-10 · **Người làm:** TV2 · **Trạng thái:** Đã gửi TV3 review, chờ review
 
-Đã tự kiểm và nhận BG-02; hợp đồng dữ liệu đã đối chiếu smoke test, hiện là bản chốt đề xuất chờ TV3 review.
+Đã tự kiểm và nhận BG-02; hợp đồng đã đối chiếu smoke test và gửi TV3 review, đồng thời để TV1 tham khảo. Đây là trạng thái bàn giao, không phải xác nhận review đạt.
 
 ## Đã làm gì
 - Tạo branch `tv2-wp05-contract-close`; nhận BG-02 trong commit riêng `edfdc71` (`ban-giao: nhận BG-02`).
@@ -20,7 +20,7 @@
 
 | Thay đổi | Lý do |
 |---|---|
-| Đổi trạng thái đầu tài liệu sang “BẢN CHỐT ĐỀ XUẤT”, chờ TV3 review; cập nhật BG-05 nhưng giữ trạng thái “Chưa” | Đã nhận BG-02 và đối chiếu log; chưa có review TV3 |
+| Đổi trạng thái đầu tài liệu sang “BẢN CHỐT ĐỀ XUẤT”, chờ TV3 review; cập nhật trạng thái BG-05 thành “Đã gửi” | Đã nhận BG-02 và đối chiếu log; trạng thái bàn giao không thay thế review TV3 |
 | Ghi kết quả các câu a–j và căn cứ file:dòng; chỉ giữ `[XM]` cho tên file xoay vòng và `url` của `file_download.failed` | Smoke test xác nhận các trường chung, giao thức, kiểu password/duration và timestamp; không chạy qua nửa đêm, không có event `file_download.failed` |
 | Thêm bảng phân loại event: 11 event phân tích, 4 event phụ đã biết, còn lại là event lạ; event phụ được giữ với trường chung, event lạ ghi lỗi và loại đến khi review | Tránh nhầm event phụ Cowrie thành event lạ; thống nhất allowlist cho bộ xử lý |
 | Bổ sung `uuid` vào trường bỏ qua; duration phiên chỉ lấy từ `session.closed`; ghi quy tắc `command_supported=unknown` cả khi shell giả báo lỗi tùy chọn; chuỗi rỗng `client_version` là thiếu | Theo bằng chứng smoke test và các đề xuất TV1 |
@@ -30,14 +30,14 @@
 ## Điều kiện BG-05
 - **Đạt:** quy định nơi nhận log `data/raw/RUN-xx/`, bảo toàn raw, kiểm hash, múi giờ UTC và cách xử lý trường thiếu đã có trong hợp đồng.
 - **Đạt một phần:** các trường chung và trường của event xuất hiện trong smoke test đã được kiểm trực tiếp; file `cowrie.json*` sau xoay vòng và `url` của `cowrie.session.file_download.failed` chưa xác minh. Các event tải file không xuất hiện trong smoke test.
-- **Chưa đạt:** TV3 chưa review hợp đồng theo checklist. Vì vậy BG-05 vẫn **Chưa**, chưa gửi bàn giao cho TV1.
+- **Chưa đạt:** TV3 chưa review hợp đồng theo checklist. BG-05 đã gửi để TV1 xem và TV3 review; trạng thái bàn giao không đồng nghĩa review đạt.
 
-## [REVIEW] soạn sẵn – chưa gửi
+## [REVIEW] gửi kèm bàn giao – chờ TV3 thực hiện
 
 ```text
 [REVIEW] Hợp đồng dữ liệu A→B (WP-05)
 Người làm: TV2 → Người review: TV3
-Vị trí: docs/04_hop_dong_du_lieu.md @ branch tv2-wp05-contract-close (phần hợp đồng chưa commit)
+Vị trí: docs/04_hop_dong_du_lieu.md @ 10b035c
 Cần kiểm tra theo checklist RV-MÃ-XỬ-LÝ và RV-CẤU-HÌNH (kế hoạch mục F.6)
 
 RV-MÃ-XỬ-LÝ:
@@ -50,6 +50,10 @@ RV-CẤU-HÌNH:
 ```
 
 ## Còn thiếu / liên quan tới người khác
-- TV3 review để hoàn thành BG-05; yêu cầu review ở trên chỉ được soạn, chưa gửi.
+- TV3 review theo checklist để xác nhận hợp đồng; BG-05 là “Đã gửi” và đang chờ review, không hàm ý đã được duyệt.
 - Đề nghị TV1 cập nhật trạng thái “trường dữ liệu chờ TV2 xác nhận” trong `docs/01_quyet_dinh_pham_vi_cong_cu.md` sau review.
-- Hợp đồng chưa commit; commit riêng duy nhất trong lượt này là nhận BG-02 (`edfdc71`). Không chạy quy trình kết thúc Prompt 8.
+- Hợp đồng đã được đồng bộ cùng bộ xử lý tại commit `10b035c`; BG-06 vẫn chưa kích hoạt.
+
+## Cập nhật trạng thái bàn giao
+
+Phần việc phía TV2 đã đủ điều kiện gửi hợp đồng cho TV3 review và TV1 xem. Theo quy ước, `Đã gửi` chỉ xác nhận bàn giao; TV3 vẫn cần review riêng theo Bảng B/BG-05. Yêu cầu `[REVIEW]` phía trên là nội dung bàn giao, chưa có kết quả review.
