@@ -9,7 +9,7 @@ Quy ước: `[XM]` chỉ phần chưa xác minh được trên log smoke test. H
 ## 1. Phạm vi và nguyên tắc
 
 - TV1 bàn giao log gốc theo từng lượt; TV2 không sửa `data/raw/`. Luồng dữ liệu là `raw` → `processed` → `results`.
-- Trước xử lý, kiểm tra `SHA256SUMS`. Ghi `events.csv`, `sessions.csv` và `bao_cao_chat_luong.txt` vào `data/processed/RUN-xx/`; chỉ bảng/biểu đồ O1–O7 vào `results/RUN-xx/`.
+- Trước xử lý, kiểm tra `SHA256SUMS`. Mặc định ghi `events.csv`, `sessions.csv` và `bao_cao_chat_luong.txt` vào `data/processed/RUN-xx/`; chỉ bảng/biểu đồ O1–O7 vào `results/RUN-xx/`. Có thể đổi riêng thư mục báo cáo chất lượng bằng tùy chọn `--out-results`.
 - Mọi thời gian lưu trong các file phân tích dùng UTC. Nhật ký thử nghiệm cũng ghi UTC.
 - Ba đơn vị đếm theo H.4:
   - **Sự kiện:** một dòng log.
@@ -65,7 +65,7 @@ Mỗi dòng tương ứng một sự kiện thuộc một trong hai lớp đư�
 | `dst_port` | Cổng đích | `dst_port` | Công cụ cấp | Không | Để rỗng | Xác minh smoke test, câu c; `cowrie.json:1–58` |
 | `protocol` | Giao thức (`ssh`/`telnet`) | `protocol` ở các sự kiện, không chỉ connect | Công cụ cấp; dự phòng suy ra khi thiếu | Không | Lấy trực tiếp; chỉ dùng cổng dự phòng nếu thiếu, bật `protocol_inferred` | Xác minh smoke test, câu a/c; `cowrie.json:1–58` |
 | `sensor` | Tên sensor | `sensor` | Công cụ cấp | Không | Để rỗng | Xác minh smoke test, câu e; `cowrie.json:1` |
-| `client_version` | Phiên bản client SSH | `version` ở `cowrie.client.version` | Công cụ cấp | Không | Rỗng hoặc chuỗi `""` đều coi là thiếu | Xác minh smoke test, câu b; `cowrie.json:3,7` |
+| `client_version` | Phiên bản client SSH | `version` ở `cowrie.client.version` | Công cụ cấp | Với sự kiện `cowrie.client.version` | Rỗng hoặc chuỗi `""` đều coi là thiếu; phiên Telnet không có sự kiện này nên không tính là lỗi thiếu trường | Xác minh smoke test, câu b; `cowrie.json:3,7` |
 | `client_hassh` | Fingerprint HASSH client SSH | `hassh` ở `cowrie.client.kex` | Công cụ cấp | Không | Để rỗng; với phiên Telnet rỗng là bình thường | `cowrie.json:8` |
 | `username` | Username thử đăng nhập | `username` ở sự kiện login | Công cụ cấp | Với sự kiện login | Để rỗng, đếm trường thiếu | `cowrie.json:9,14` |
 | `password` | Password thử đăng nhập | `password` ở sự kiện login | Công cụ cấp | Với sự kiện login khi có password | Để rỗng; không suy ra từ xác thực public key | Xác minh smoke test, câu d; `cowrie.json:9,14` |
@@ -74,7 +74,7 @@ Mỗi dòng tương ứng một sự kiện thuộc một trong hai lớp đư�
 | `command_supported` | Trạng thái hỗ trợ lệnh | Đối chiếu `input` của `cowrie.command.input` và `cowrie.command.failed` cùng phiên | Suy ra | Không | Chỉ nhận `unsupported` hoặc `unknown`; không suy thành `supported` | Câu h: chỉ quan sát ở lần TV1 gõ thêm ngoài smoke test, dòng 116–117 |
 | `download_url` | URL tải | `url` ở `cowrie.session.file_download` | Công cụ cấp | Không | Để rỗng | Theo schema Cowrie; chưa có event này trong smoke test |
 | `file_sha256` | SHA-256 tệp tải | `shasum` ở `cowrie.session.file_download` | Công cụ cấp | Không | Để rỗng; chỉ đọc trong đúng event, không nhầm hash TTY | Theo schema Cowrie; chưa có event này trong smoke test |
-| `duration_ms` | Thời lượng do Cowrie ghi, mili giây | `duration_ms` chỉ ở `cowrie.session.closed`; không lấy từ `cowrie.log.closed` | Công cụ cấp | Không | Với sự kiện khác để rỗng; thời lượng tự tính của phiên chỉ nằm trong `sessions.csv` | Xác minh smoke test, câu g; `cowrie.json:4,20` |
+| `duration_ms` | Thời lượng phiên, mili giây | `duration_ms` chỉ ở `cowrie.session.closed`; không lấy từ `cowrie.log.closed` | Công cụ cấp hoặc suy ra | Không | Với sự kiện khác để rỗng; nếu thiếu ở `session.closed` nhưng có mốc connect và close, tính `close - connect` (mili giây) cho event đóng (`duration_computed=true`) và phiên (`duration_source=computed`) | Xác minh smoke test, câu g; `cowrie.json:4,20` |
 | `message` | Thông điệp gốc | `message` | Công cụ cấp | Không | Để rỗng | `cowrie.json:1–58` |
 | `scenario_id` | Kịch bản khớp nhật ký | Nhật ký thử nghiệm; quy tắc tại mục 6 | Nhóm gán / suy ra | Với dữ liệu lab | Không khớp hoặc khớp nhiều: ghi trạng thái, chuyển TV3 review | Chưa áp dụng – chờ dữ liệu |
 | `run_id` | Mã lượt chạy | Tên thư mục `RUN-xx` | Nhóm gán | Có | Thiếu thì không nhận lượt vào xử lý | Chưa áp dụng – do nhóm gán |
@@ -121,7 +121,7 @@ Một dòng cho mỗi `session_id` xác định được trong một `run_id`.
 | `dst_port` | Cổng đích từ `dst_port` | Xác minh câu c; `cowrie.json:1–58` |
 | `start_utc` | Thời điểm sớm nhất của phiên sau parse từ `timestamp` | Xác minh câu j; `cowrie.json:1–58` |
 | `end_utc` | Thời điểm muộn nhất của phiên sau parse từ `timestamp` | Xác minh câu j; `cowrie.json:1–58` |
-| `duration_ms` | Chỉ lấy từ `duration_ms` ở `cowrie.session.closed`; nếu thiếu, tính `end_utc - start_utc` | Xác minh câu g; `cowrie.json:4,20` (`log.closed` cũng có nhưng không dùng) |
+| `duration_ms` | Chỉ lấy từ `duration_ms` ở `cowrie.session.closed`; nếu thiếu nhưng có mốc connect và close, tính `close - connect` (mili giây), đồng thời đặt `duration_computed=true` ở event đóng và `duration_source=computed` ở phiên | Xác minh câu g; `cowrie.json:4,20` (`log.closed` cũng có nhưng không dùng) |
 | `duration_source` | `tool` nếu lấy từ log; `computed` nếu tự tính; rỗng nếu không xác định | Quy ước nhóm; tương ứng `duration_computed` trong `events.csv` |
 | `n_events` | Số sự kiện của phiên sau khử trùng | Bộ xử lý |
 | `n_login_failed` | Số sự kiện `cowrie.login.failed` | `cowrie.json:9,25,36,51` |
@@ -163,7 +163,9 @@ Không ghép theo IP đơn thuần: KB-02 có thể có nhiều kết nối từ
 - **Timestamp không parse được:** không thể sắp xếp hoặc so UTC đáng tin cậy; loại khỏi dữ liệu chuẩn hóa và ghi `file:dòng` vào báo cáo.
 - **Báo lỗi:** mỗi lỗi cần tái hiện được; tạo/cập nhật `review/issues.md` với file:dòng, loại/mức độ lỗi, kết quả mong đợi, kết quả thực tế và ảnh hưởng. Không sửa file raw để “chữa” lỗi.
 
-`bao_cao_chat_luong.txt` tối thiểu liệt kê:
+`bao_cao_chat_luong.txt` được lưu mặc định tại
+`data/processed/RUN-xx/bao_cao_chat_luong.txt` theo quy ước Plan mục E.5/C4;
+có thể đổi riêng thư mục báo cáo bằng tùy chọn `--out-results`. Báo cáo tối thiểu liệt kê:
 
 1. `run_id`, các file đầu vào, kết quả kiểm tra SHA-256.
 2. Số dòng đọc, JSON hợp lệ, JSON hỏng, dòng trống, bản trùng bị loại.

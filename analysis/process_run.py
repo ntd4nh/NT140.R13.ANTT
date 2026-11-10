@@ -7,7 +7,6 @@ import json
 import re
 import sys
 from collections import Counter, defaultdict
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -136,19 +135,23 @@ def _project_root() -> Path:
 
 
 def _validate_paths(
-    run_dir: Path, out_processed: Path, out_results: Path
+    run_dir: Path, out_processed: Path, out_results: Path | None
 ) -> None:
     raw_dir = (_project_root() / "data" / "raw").resolve()
     protected_inputs = [run_dir.resolve()]
-    for output in (out_processed.resolve(), out_results.resolve()):
+    outputs = [out_processed.resolve()]
+    if out_results is not None:
+        outputs.append(out_results.resolve())
+    for output in outputs:
         if _is_within(output, raw_dir):
             raise ProcessError(f"Đầu ra không được nằm trong data/raw/: {output}")
         if any(_is_within(output, source) for source in protected_inputs):
             raise ProcessError(f"Đầu ra không được nằm trong thư mục đầu vào: {output}")
-    processed = out_processed.resolve()
-    results = out_results.resolve()
-    if _is_within(processed, results) or _is_within(results, processed):
-        raise ProcessError("Hai thư mục đầu ra không được lồng nhau.")
+    if out_results is not None:
+        processed = out_processed.resolve()
+        results = out_results.resolve()
+        if _is_within(processed, results) or _is_within(results, processed):
+            raise ProcessError("Hai thư mục đầu ra không được lồng nhau.")
 
 
 def _is_demo_directory(run_dir: Path) -> bool:
@@ -346,6 +349,7 @@ def _classify_and_normalize(
     }
     accepted_records: list[dict[str, Any]] = []
     session_protocols: dict[str, set[str]] = defaultdict(set)
+    connect_protocols: dict[str, set[str]] = defaultdict(set)
     session_ports: dict[str, set[str]] = defaultdict(set)
     command_failures: set[tuple[str, str]] = set()
 
@@ -371,6 +375,8 @@ def _classify_and_normalize(
             for field in ("username", "password"):
                 if not _field_value(event, field):
                     quality["missing_fields"][(event_type, field)] += 1
+        if event_type in COMMAND_EVENTS and event.get("input") in (None, ""):
+            quality["missing_fields"][(event_type, "input")] += 1
         protocol = _field_value(event, "protocol")
         dst_port = _field_value(event, "dst_port")
         timestamp = _parse_utc(event.get("timestamp"))
@@ -384,8 +390,10 @@ def _classify_and_normalize(
                 )
             continue
         quality["event_classes"][classification] += 1
-        if session_id and protocol and event_type == "cowrie.session.connect":
+        if session_id and protocol:
             session_protocols[session_id].add(protocol)
+            if event_type == "cowrie.session.connect":
+                connect_protocols[session_id].add(protocol)
         if session_id and dst_port and event_type == "cowrie.session.connect":
             session_ports[session_id].add(dst_port)
         if event_type == "cowrie.command.failed" and session_id:
@@ -406,8 +414,12 @@ def _classify_and_normalize(
         classification = record["classification"]
         protocol = _field_value(event, "protocol")
         protocol_inferred = False
-        if not protocol and session_id:
-            session_values = session_protocols.get(session_id, set())
+        if not protocol:
+            session_values = (
+                connect_protocols.get(session_id, set()) if session_id else set()
+            )
+            if not session_values and session_id:
+                session_values = session_protocols.get(session_id, set())
             if len(session_values) == 1:
                 protocol = next(iter(session_values))
             elif len(session_values) > 1:
@@ -606,15 +618,17 @@ def _attach_scenarios(
             if start <= window_end and end >= window_start:
                 candidates.add(scenario)
         ordered_candidates = sorted(candidates)
-        session["scenario_candidates"] = json.dumps(
-            ordered_candidates, ensure_ascii=False, separators=(",", ":")
-        )
         if len(ordered_candidates) == 1:
+            session["scenario_candidates"] = ""
             session["scenario_id"] = ordered_candidates[0]
             session["scenario_match_status"] = "matched"
         elif not ordered_candidates:
+            session["scenario_candidates"] = ""
             session["scenario_match_status"] = "unmatched"
         else:
+            session["scenario_candidates"] = json.dumps(
+                ordered_candidates, ensure_ascii=False, separators=(",", ":")
+            )
             session["scenario_match_status"] = "ambiguous"
 
 
@@ -704,7 +718,7 @@ def _build_sessions(
             "run_id": run_id,
             "scenario_id": "",
             "scenario_match_status": "unmatched",
-            "scenario_candidates": "[]",
+            "scenario_candidates": "",
             "src_ip": ip_values[0] if len(ip_values) == 1 else "",
             "protocol": protocol_values[0] if len(protocol_values) == 1 else "",
             "dst_port": port_values[0] if len(port_values) == 1 else "",
@@ -758,7 +772,6 @@ def _format_quality_report(
     transform_quality: dict[str, Any],
     sessions: list[dict[str, Any]],
     event_rows: list[dict[str, Any]],
-    started_at: datetime,
 ) -> str:
     login_count = sum(
         row["event_type"] in LOGIN_EVENTS for row in event_rows
@@ -870,6 +883,11 @@ def _format_quality_report(
     )
     if transform_quality.get("scenario_warning"):
         lines.append(f"   Cảnh báo gắn kịch bản: {transform_quality['scenario_warning']}")
+    if "delta_override" in transform_quality:
+        lines.append(
+            "   Ghi đè clock_offset bằng --delta-seconds: "
+            f"{transform_quality['delta_override']}s"
+        )
     if transform_quality.get("protocol_conflicts"):
         lines.append("   Protocol mâu thuẫn:")
         lines.extend(
@@ -882,12 +900,21 @@ def _format_quality_report(
             f"      {failure}"
             for failure in transform_quality["duration_compute_failures"]
         )
-    lines.append(
-        "7. Thời điểm xử lý (UTC): "
-        + started_at.astimezone(timezone.utc).isoformat(timespec="microseconds").replace(
-            "+00:00", "Z"
-        )
+    has_review_issue = bool(
+        parse_quality["malformed_lines"]
+        or transform_quality["missing_timestamps"]
+        or transform_quality["bad_timestamps"]
+        or transform_quality["missing_fields"]
+        or transform_quality["unknown_events"]
     )
+    if has_review_issue:
+        lines.append(
+            "7. Báo lỗi review: review/issues.md (cần cập nhật khi có issue)"
+        )
+    else:
+        lines.append(
+            "7. Báo lỗi review: không phát sinh issue cho review/issues.md"
+        )
     return "\n".join(lines) + "\n"
 
 
@@ -898,6 +925,7 @@ def process_run(
     data_origin: str | None = None,
     out_processed: Path | None = None,
     out_results: Path | None = None,
+    delta_seconds: float | None = None,
 ) -> tuple[Path, Path, Path]:
     run_dir = run_dir.resolve()
     if not run_dir.is_dir():
@@ -908,7 +936,7 @@ def process_run(
     origin = _select_data_origin(run_dir, data_origin)
     root = _project_root()
     processed_dir = (out_processed or root / "data" / "processed" / run_id).resolve()
-    results_dir = (out_results or root / "results" / run_id).resolve()
+    results_dir = out_results.resolve() if out_results is not None else None
     _validate_paths(run_dir, processed_dir, results_dir)
 
     hash_results, hash_errors = _check_manifest(run_dir)
@@ -921,13 +949,18 @@ def process_run(
     if not log_files:
         raise ProcessError("Thiếu file bắt buộc: không có cowrie.json*.")
 
-    started_at = datetime.now(timezone.utc)
     records, parse_quality = _read_json_lines(log_files)
     normalized, transform_quality = _classify_and_normalize(
         records, run_id, origin
     )
     logbook = _load_logbook(logbook_path, run_id)
-    clock_offset = _read_clock_offset(run_dir) if logbook_path is not None else None
+    clock_offset = None
+    if logbook_path is not None:
+        if delta_seconds is not None:
+            clock_offset = delta_seconds
+            transform_quality["delta_override"] = delta_seconds
+        else:
+            clock_offset = _read_clock_offset(run_dir)
     sessions = _build_sessions(
         normalized,
         run_id,
@@ -953,15 +986,15 @@ def process_run(
         transform_quality,
         sessions,
         normalized,
-        started_at,
     )
 
     events_path = processed_dir / "events.csv"
     sessions_path = processed_dir / "sessions.csv"
-    report_path = results_dir / "bao_cao_chat_luong.txt"
+    report_dir = results_dir or processed_dir
+    report_path = report_dir / "bao_cao_chat_luong.txt"
     _write_csv(events_path, EVENT_FIELDS, normalized)
     _write_csv(sessions_path, SESSION_FIELDS, sessions)
-    results_dir.mkdir(parents=True, exist_ok=True)
+    report_dir.mkdir(parents=True, exist_ok=True)
     report_path.write_text(report, encoding="utf-8", newline="\n")
     return events_path, sessions_path, report_path
 
@@ -977,6 +1010,7 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument("--out-processed", type=Path)
     parser.add_argument("--out-results", type=Path)
+    parser.add_argument("--delta-seconds", type=float, default=None)
     return parser.parse_args(argv)
 
 
@@ -992,6 +1026,7 @@ def main(argv: list[str] | None = None) -> int:
             data_origin=args.data_origin,
             out_processed=args.out_processed,
             out_results=args.out_results,
+            delta_seconds=args.delta_seconds,
         )
     except (ProcessError, OSError, UnicodeError) as error:
         print(f"Lỗi: {error}", file=sys.stderr)

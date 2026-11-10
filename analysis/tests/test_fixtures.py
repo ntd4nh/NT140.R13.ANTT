@@ -53,7 +53,6 @@ def _copy_smoke_test(tmp_path):
 
 def _run_cli(run_dir, tmp_path, *extra_args):
     out_processed = tmp_path / "out" / "processed"
-    out_results = tmp_path / "out" / "results"
     command = [
         sys.executable,
         "-m",
@@ -62,8 +61,6 @@ def _run_cli(run_dir, tmp_path, *extra_args):
         str(run_dir),
         "--out-processed",
         str(out_processed),
-        "--out-results",
-        str(out_results),
         *map(str, extra_args),
     ]
     return subprocess.run(
@@ -86,7 +83,7 @@ def _outputs(tmp_path):
     return (
         tmp_path / "out" / "processed" / "events.csv",
         tmp_path / "out" / "processed" / "sessions.csv",
-        tmp_path / "out" / "results" / "bao_cao_chat_luong.txt",
+        tmp_path / "out" / "processed" / "bao_cao_chat_luong.txt",
     )
 
 
@@ -138,6 +135,8 @@ def test_processor_fixture_and_does_not_change_raw(tmp_path):
     assert "JSON hợp lệ: 48" in report
     assert "JSON hỏng: 1" in report
     assert "Dòng trống: 1" in report
+    assert "7. Báo lỗi review: review/issues.md" in report
+    assert "Thời điểm xử lý" not in report
     assert "Bản trùng dư đã loại: 1" in report
     assert "cowrie.session.unexpected" in report
     assert "Dòng JSON hỏng:" in report
@@ -275,6 +274,92 @@ def test_duration_uses_session_closed_and_computes_when_missing(tmp_path):
     assert session["duration_ms"] == "12000"
 
 
+def test_missing_command_input_and_protocol_port_fallback_without_session(tmp_path):
+    run_dir = _copy_fixture(tmp_path)
+    log = run_dir / "cowrie.json"
+    appended_line = len(log.read_text(encoding="utf-8").splitlines()) + 1
+    event = {
+        "eventid": "cowrie.command.input",
+        "timestamp": "2026-01-01T00:00:30Z",
+        "src_ip": "192.0.2.10",
+        "dst_port": 2222,
+        "input": "",
+    }
+    with log.open("a", encoding="utf-8") as output:
+        output.write(json.dumps(event, separators=(",", ":")) + "\n")
+    _write_manifest(run_dir)
+
+    result = _run_cli(run_dir, tmp_path)
+    assert result.returncode == 0, result.stderr
+    events = _read_csv(_outputs(tmp_path)[0])
+    command = next(
+        row for row in events
+        if row["event_type"] == "cowrie.command.input"
+        and row["raw_ref"] == f"cowrie.json:{appended_line}"
+    )
+    assert command["session_id"] == ""
+    assert command["protocol"] == "ssh"
+    assert command["protocol_inferred"] == "true"
+    report = _outputs(tmp_path)[2].read_text(encoding="utf-8")
+    assert "cowrie.command.input.input: 1" in report
+
+
+def test_protocol_propagates_from_session_prioritizing_connect(tmp_path):
+    run_dir = _copy_fixture(tmp_path)
+    log = run_dir / "cowrie.json"
+    rewritten = []
+    for line in log.read_text(encoding="utf-8").splitlines():
+        event = json.loads(line)
+        if event.get("session") == "a1b2c3d4e5f6":
+            if event.get("eventid") == "cowrie.client.version":
+                event["protocol"] = "telnet"
+            elif event.get("eventid") == "cowrie.client.kex":
+                event.pop("protocol", None)
+            line = json.dumps(event, separators=(",", ":"))
+        rewritten.append(line)
+    rewritten.extend(
+        json.dumps(event, separators=(",", ":"))
+        for event in (
+            {
+                "eventid": "cowrie.session.closed",
+                "timestamp": "2026-01-01T00:09:00Z",
+                "session": "0a1b2c3d4e5f",
+                "src_ip": "192.0.2.1",
+                "dst_port": 2223,
+                "protocol": "telnet",
+                "duration_ms": 0,
+            },
+            {
+                "eventid": "cowrie.client.kex",
+                "timestamp": "2026-01-01T00:09:01Z",
+                "session": "0a1b2c3d4e5f",
+                "src_ip": "192.0.2.1",
+                "dst_port": 2223,
+            },
+        )
+    )
+    log.write_text("\n".join(rewritten) + "\n", encoding="utf-8")
+    _write_manifest(run_dir)
+
+    result = _run_cli(run_dir, tmp_path)
+    assert result.returncode == 0, result.stderr
+    events = _read_csv(_outputs(tmp_path)[0])
+    connect_preferred = next(
+        row for row in events
+        if row["session_id"] == "a1b2c3d4e5f6"
+        and row["event_type"] == "cowrie.client.kex"
+    )
+    session_fallback = next(
+        row for row in events
+        if row["session_id"] == "0a1b2c3d4e5f"
+        and row["event_type"] == "cowrie.client.kex"
+    )
+    assert connect_preferred["protocol"] == "ssh"
+    assert connect_preferred["protocol_inferred"] == "false"
+    assert session_fallback["protocol"] == "telnet"
+    assert session_fallback["protocol_inferred"] == "false"
+
+
 def test_logbook_matching_matched_unmatched_and_ambiguous(tmp_path):
     run_dir = _copy_fixture(tmp_path)
     (run_dir / "run_note.txt").write_text(
@@ -295,7 +380,15 @@ def test_logbook_matching_matched_unmatched_and_ambiguous(tmp_path):
     ]
     assert session_by_id["c2d3e4f5a6b7"]["scenario_match_status"] == "matched"
     assert session_by_id["c2d3e4f5a6b7"]["scenario_id"] == "KB-02"
-    assert any(row["scenario_match_status"] == "unmatched" for row in sessions)
+    assert session_by_id["a1b2c3d4e5f6"]["scenario_candidates"] == (
+        '["KB-01","KB-01-KHAC"]'
+    )
+    assert session_by_id["c2d3e4f5a6b7"]["scenario_candidates"] == ""
+    unmatched = [
+        row for row in sessions if row["scenario_match_status"] == "unmatched"
+    ]
+    assert unmatched
+    assert all(row["scenario_candidates"] == "" for row in unmatched)
     events = _read_csv(_outputs(tmp_path)[0])
     assert {
         row["scenario_id"]
@@ -319,6 +412,52 @@ def test_logbook_without_clock_offset_requires_review(tmp_path):
     assert all(row["scenario_match_status"] == "needs_review" for row in sessions)
     report = _outputs(tmp_path)[2].read_text(encoding="utf-8")
     assert "thiếu clock_offset" in report
+
+
+def test_delta_seconds_cli_override(tmp_path):
+    run_dir = _copy_fixture(tmp_path)
+    (run_dir / "run_note.txt").write_text(
+        "run_note without offset\n",
+        encoding="utf-8",
+    )
+    _write_manifest(run_dir)
+    result = _run_cli(
+        run_dir,
+        tmp_path,
+        "--logbook",
+        FIXTURE_ROOT / "minh_hoa_nhat_ky_gan_kich_ban.csv",
+        "--delta-seconds",
+        "1.0",
+    )
+    assert result.returncode == 0, result.stderr
+    sessions = _read_csv(_outputs(tmp_path)[1])
+    session_by_id = {row["session_id"]: row for row in sessions}
+    assert session_by_id["c2d3e4f5a6b7"]["scenario_match_status"] == "matched"
+    assert session_by_id["a1b2c3d4e5f6"]["scenario_match_status"] == "ambiguous"
+    assert session_by_id["c3d4e5f6a7b8"]["scenario_match_status"] == "needs_review"
+    report = _outputs(tmp_path)[2].read_text(encoding="utf-8")
+    assert "Ghi đè clock_offset bằng --delta-seconds: 1.0s" in report
+    assert "thiếu clock_offset" not in report
+
+    (run_dir / "run_note.txt").write_text(
+        "clock_offset_s=0.0\n",
+        encoding="utf-8",
+    )
+    _write_manifest(run_dir)
+    result = _run_cli(
+        run_dir,
+        tmp_path,
+        "--logbook",
+        FIXTURE_ROOT / "minh_hoa_nhat_ky_gan_kich_ban.csv",
+        "--delta-seconds",
+        "1.0",
+    )
+    assert result.returncode == 0, result.stderr
+    sessions = _read_csv(_outputs(tmp_path)[1])
+    session_by_id = {row["session_id"]: row for row in sessions}
+    assert session_by_id["c2d3e4f5a6b7"]["scenario_match_status"] == "matched"
+    report = _outputs(tmp_path)[2].read_text(encoding="utf-8")
+    assert "Ghi đè clock_offset bằng --delta-seconds: 1.0s" in report
 
 
 def test_smoke_schema_on_temporary_copy(tmp_path):
@@ -420,7 +559,7 @@ def test_smoke_schema_on_temporary_copy(tmp_path):
     assert "Phiên tổng: 8" in report
 
 
-def test_outputs_are_reproducible_except_processing_time(tmp_path):
+def test_outputs_are_reproducible(tmp_path):
     run_dir = _copy_fixture(tmp_path)
     first = _run_cli(run_dir, tmp_path)
     assert first.returncode == 0, first.stderr
@@ -430,19 +569,39 @@ def test_outputs_are_reproducible_except_processing_time(tmp_path):
     second = _run_cli(run_dir, tmp_path)
     assert second.returncode == 0, second.stderr
     second_bytes = [path.read_bytes() for path in output_paths]
-    assert first_bytes[:2] == second_bytes[:2]
-    first_report = first_bytes[2].replace(
-        next(
-            line for line in first_bytes[2].decode("utf-8").splitlines(keepends=True)
-            if line.startswith("7. Thời điểm xử lý (UTC): ")
-        ).encode("utf-8"),
-        b"",
+    assert first_bytes == second_bytes
+
+
+def test_quality_report_without_issues_uses_stable_review_status(tmp_path):
+    run_dir = tmp_path / "RUN-CLEAN"
+    run_dir.mkdir()
+    session_id = "123456abcdef"
+    events = [
+        {
+            "eventid": "cowrie.session.connect",
+            "timestamp": "2026-01-01T00:00:00Z",
+            "session": session_id,
+            "src_ip": "192.0.2.10",
+            "dst_port": 2222,
+            "protocol": "ssh",
+        },
+        {
+            "eventid": "cowrie.session.closed",
+            "timestamp": "2026-01-01T00:00:01Z",
+            "session": session_id,
+            "src_ip": "192.0.2.10",
+            "dst_port": 2222,
+            "protocol": "ssh",
+            "duration_ms": 1000,
+        },
+    ]
+    (run_dir / "cowrie.json").write_text(
+        "".join(json.dumps(event, separators=(",", ":")) + "\n" for event in events),
+        encoding="utf-8",
     )
-    second_report = second_bytes[2].replace(
-        next(
-            line for line in second_bytes[2].decode("utf-8").splitlines(keepends=True)
-            if line.startswith("7. Thời điểm xử lý (UTC): ")
-        ).encode("utf-8"),
-        b"",
-    )
-    assert first_report == second_report
+    _write_manifest(run_dir)
+
+    result = _run_cli(run_dir, tmp_path, "--data-origin", "tham_khao")
+    assert result.returncode == 0, result.stderr
+    report = _outputs(tmp_path)[2].read_text(encoding="utf-8")
+    assert "7. Báo lỗi review: không phát sinh issue cho review/issues.md" in report
