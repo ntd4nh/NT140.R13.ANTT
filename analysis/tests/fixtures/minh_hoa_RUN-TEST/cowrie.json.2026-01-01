@@ -12,7 +12,7 @@
 {"eventid":"cowrie.client.version","timestamp":"2026-01-01T00:07:01Z","session":"a2b3c4d5e6f7","src_ip":"192.0.2.10","sensor":"demo","message":"client version","version":"SSH-2.0-OpenSSH_9.6"}
 {"eventid":"cowrie.session.closed","timestamp":"2026-01-01T00:07:03Z","session":"a2b3c4d5e6f7","src_ip":"192.0.2.10","sensor":"demo","message":"session closed","duration_ms":1000}
 {"eventid":"cowrie.session.unexpected","timestamp":"2026-01-01T00:08:00Z","session":"b2c3d4e5f6a7","src_ip":"192.0.2.10","sensor":"demo","message":"intentionally unknown event"}
-{"eventid":"cowrie.client.version","timestamp":"2026-01-01T00:08:01Z","session":"c3d4e5f6a7b8","sensor":"demo","message":"intentionally missing src_ip","version":"SSH-2.0-OpenSSH_9.6"}
+{"eventid":"cowrie.client.version","timestamp":"2026-01-01T00:08:01Z","session":"c3d4e5f6a7b8","sensor":"demo","message":"intentionally missing src_ip","dst_port":2222,"version":"SSH-2.0-OpenSSH_9.6"}
 {"eventid":"cowrie.session.closed","session":"d4e5f6a7b8c9","src_ip":"192.0.2.1","sensor":"demo","message":"intentionally missing timestamp","duration_ms":1000}
 
 {"eventid":"cowrie.session.connect","timestamp":"2026-01-01T00:09:00Z","session":"e5f6a7b8c9d0","src_ip":"192.0.2.10","sensor":"demo","message":"truncated record","src_port":49000

@@ -16,6 +16,8 @@ Các bẫy có chủ ý: eventid lạ, thiếu `src_ip`, thiếu `timestamp`, s�
 không theo thứ tự thời gian, và timestamp mang hậu tố `Z` hoặc `+00:00`.
 Fixture cũng có một kết nối không có `cowrie.session.closed`.
 
-`minh_hoa_nhat_ky_thu_nghiem.csv` dùng đúng các cột mẫu H.2. Tất cả nội dung
-trong fixture chỉ phục vụ viết và kiểm thử bộ xử lý; không đại diện cho kết quả
-thực nghiệm hay log Cowrie thật.
+`minh_hoa_nhat_ky_thu_nghiem.csv` dùng đúng các cột mẫu H.2.
+`minh_hoa_nhat_ky_gan_kich_ban.csv` là nhật ký nhỏ tổng hợp để kiểm tra khớp
+kịch bản đơn, không khớp và khớp nhiều. Tất cả nội dung trong fixture chỉ phục
+vụ viết và kiểm thử bộ xử lý; không đại diện cho kết quả thực nghiệm hay log
+Cowrie thật.
