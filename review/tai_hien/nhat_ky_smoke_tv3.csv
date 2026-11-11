@@ -1,0 +1,7 @@
+run_id,scenario_id,step_no,time_utc_client,may_nguon,ip_nguon,dich_vu_cong,thao_tac,ket_qua_phia_client,nguoi_thuc_hien,ghi_chu
+RUN-SMOKE,S-SSH-SAI-A,1,2026-11-10T14:47:44Z,VM-A,192.168.239.10,ssh/2222,SSH mat khau sai,bi tu choi,TV3,dung gio trong evidence/smoke_test/README.md
+RUN-SMOKE,S-SSH-DUNG-A,1,2026-11-10T14:47:47Z,VM-A,192.168.239.10,ssh/2222,SSH dung -> whoami -> exit,vao duoc,TV3,dung gio trong evidence/smoke_test/README.md
+RUN-SMOKE,S-TEL-A,1,2026-11-10T14:47:49Z,VM-A,192.168.239.10,telnet/2223,Telnet sai -> dung -> whoami -> exit,vao duoc,TV3,dung gio trong evidence/smoke_test/README.md
+RUN-SMOKE,S-SSH-SAI-W,1,2026-11-10T14:48:03Z,Windows,192.168.239.1,ssh/2222,SSH mat khau sai,bi tu choi,TV3,dung gio trong evidence/smoke_test/README.md
+RUN-SMOKE,S-SSH-DUNG-W,1,2026-11-10T14:48:06Z,Windows,192.168.239.1,ssh/2222,SSH dung -> whoami -> exit,vao duoc,TV3,dung gio trong evidence/smoke_test/README.md
+RUN-SMOKE,S-TEL-W,1,2026-11-10T14:48:13Z,Windows,192.168.239.1,telnet/2223,Telnet sai -> dung -> whoami -> exit,vao duoc,TV3,dung gio trong evidence/smoke_test/README.md
