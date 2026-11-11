@@ -66,8 +66,8 @@ Tài liệu chính thức nêu 3 cách: pip, Docker, git checkout (cho người 
 | Tải tệp từ shell giả (`wget`, `curl`): Cowrie tải thật | Giữ, nhưng VM-H không có đường ra Internet. Chỉ thử ở KB-04 với web server trong lab |
 | Chế độ proxy (chuyển tiếp tới máy thật) | Không dùng, giữ `backend = shell` |
 | Chế độ LLM (gọi mô hình ngôn ngữ bên ngoài) | Không dùng |
-| Các plugin xuất log ra dịch vụ ngoài | Chỉ bật output JSON ghi file. Kiểm tra trong `cowrie.cfg` không có plugin nào khác được bật [cần xem trên máy thật] |
-| SSH port forwarding (`cowrie.direct-tcpip.request`) | Cowrie ghi lại yêu cầu. Xem lại các tùy chọn forwarding trong mục `[ssh]` của `cowrie.cfg.dist` khi cài [cần xem trên máy thật] |
+| Các plugin xuất log ra dịch vụ ngoài | Chỉ bật output JSON ghi file. Đã kiểm trên máy thật: trong `cowrie.cfg` chỉ có `[ssh]`, `[telnet]` và `[output_jsonlog]` mang `enabled = true`; mọi `[output_...]` khác đều `enabled = false` |
+| SSH port forwarding (`cowrie.direct-tcpip.request`) | Mặc định Cowrie bật (`forwarding = true`). Nhóm **đã tắt** (`[ssh] forwarding = false`, `cowrie.cfg:813`). Khi thử chuyển tiếp, Cowrie từ chối với lỗi `unknown channel: b'direct-tcpip'` |
 
 Mọi tính năng trên đều nằm sau lớp cách ly ở mức VM: không có NAT, firewall chặn chiều ra (kế hoạch mục D.5).
 

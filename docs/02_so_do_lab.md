@@ -6,7 +6,7 @@
 
 | Thành phần | Cấu hình |
 | --- | --- |
-| Máy host | Máy của TV1, Windows 11, **16 GB RAM**, VMware Workstation `<phiên bản>` |
+| Máy host | Máy của TV1, Windows 11, **16 GB RAM**, VMware Workstation 25H2 |
 | **VM-H** – honeypot | Ubuntu Server 24.04 LTS (có Python 3.12, đủ yêu cầu Python ≥ 3.11 của Cowrie), 2 GB RAM, 2 vCPU, 20 GB đĩa, không cài giao diện |
 | **VM-A** – nguồn 1 | Ubuntu Server 24.04 LTS, 2 GB RAM, 1 vCPU, 15 GB đĩa |
 | **Host** – nguồn 2 | Chính máy Windows, nối vào lab qua card mạng ảo VMnet1 |
