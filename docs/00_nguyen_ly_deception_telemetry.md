@@ -42,7 +42,7 @@ Mỗi lớp tương tác sinh một nhóm sự kiện. Cowrie ghi mỗi sự ki�
 | Tệp | `wget`/`curl` tải file | `cowrie.session.file_download`, `...file_download.failed` | `url`, `shasum` | **Dự kiến**: TV1 thấy `file_download.failed` khi tự kiểm cách ly, log đó không thuộc smoke test. Kiểm ở KB-04 |
 | Toàn phiên | Mọi thứ hiện trên màn hình | `cowrie.log.closed` + file TTY | `ttylog` | `json:20` → `evidence/smoke_test/tty/317e…b964` |
 
-File TTY ghi lại cả **đầu ra** mà kẻ tấn công nhìn thấy, không chỉ lệnh gõ vào. TV3 đã giải mã file TTY ở trên: có lời chào Debian, dấu nhắc `labuser@svr04:~$`, lệnh `whoami` trả `labuser`. Đây là nguồn chính để đối chiếu mồi và điểm lộ.
+File TTY ghi lại cả **đầu ra** mà kẻ tấn công nhìn thấy, không chỉ lệnh gõ vào. TV3 đã giải mã file TTY ở trên (`python -I review/tai_hien/doc_tty.py <file TTY>`): có lời chào Debian, dấu nhắc `labuser@svr04:~$`, lệnh `whoami` trả `labuser`. Đây là nguồn chính để đối chiếu mồi và điểm lộ.
 
 Ngoài `cowrie.json`, `cowrie.log` là log chẩn đoán dạng chữ: không dùng để đếm, nhưng giải thích được sự kiện lạ. Ví dụ `json:3` có `version` rỗng; `cowrie.log` cùng thời điểm ghi `Bad protocol version identification: b''`.
 
