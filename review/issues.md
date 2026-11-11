@@ -15,7 +15,7 @@ cp -r evidence/smoke_test/{cowrie.json,cowrie.log,tty,SHA256SUMS} /tmp/tv3/RUN-S
 | ISS-01 | Trung bình | TV2 (+ TV4 cho nhật ký) | `analysis/process_run.py` | Kịch bản chỉ có một dòng nhật ký không khớp được phiên khi δ nhỏ | Mở |
 | ISS-02 | Thấp | TV2 | `analysis/process_run.py` | Báo cáo chất lượng tính phiên chỉ dò cổng là "thiếu trường bắt buộc" | Mở |
 | ISS-03 | Thấp | TV2 | `docs/04_hop_dong_du_lieu.md` | Trạng thái BG-05 trong hợp đồng lỗi thời | Mở |
-| ISS-04 | Thấp | TV1 | `docs/02_so_do_lab.md`, `docs/01_quyet_dinh_pham_vi_cong_cu.md` | Còn chỗ trống và ghi chú "[cần xem trên máy thật]" đã có câu trả lời | Mở |
+| ISS-04 | Thấp | TV1 | `docs/02_so_do_lab.md`, `docs/01_quyet_dinh_pham_vi_cong_cu.md` | Còn chỗ trống và ghi chú "[cần xem trên máy thật]" đã có câu trả lời | TV1 đã sửa, chờ TV3 kiểm lại |
 
 ---
 
