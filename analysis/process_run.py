@@ -89,6 +89,7 @@ AUXILIARY_EVENTS = {
 KNOWN_EVENTS = ANALYSIS_EVENTS | AUXILIARY_EVENTS
 LOGIN_EVENTS = {"cowrie.login.failed", "cowrie.login.success"}
 COMMAND_EVENTS = {"cowrie.command.input", "cowrie.command.failed"}
+SCENARIO_OPERATION_TOLERANCE_SECONDS = 1.0
 COMMON_FIELDS = {
     "eventid",
     "timestamp",
@@ -599,7 +600,10 @@ def _attach_scenarios(
         port = row.get("_port")
         if scenario and source_ip and port is not None:
             windows[(scenario, source_ip, port)].append(row["_timestamp"])
-    tolerance = abs(clock_offset)
+    tolerance = abs(clock_offset) + SCENARIO_OPERATION_TOLERANCE_SECONDS
+    quality["scenario_operation_tolerance_seconds"] = (
+        SCENARIO_OPERATION_TOLERANCE_SECONDS
+    )
 
     for session in sessions:
         start = session["_start"]
@@ -847,6 +851,29 @@ def _format_quality_report(
             transform_quality["missing_fields"].items()
         ):
             lines.append(f"   {event_type}.{field}: {count}")
+        session_by_id = {session["session_id"]: session for session in sessions}
+        kex_sessions = {
+            row["session_id"]
+            for row in event_rows
+            if row["event_type"] == "cowrie.client.kex" and row["session_id"]
+        }
+        empty_version_probe_sessions = sorted(
+            {
+                row["session_id"]
+                for row in event_rows
+                if row["event_type"] == "cowrie.client.version"
+                and row["client_version"] == ""
+                and row["session_id"]
+                and row["session_id"] not in kex_sessions
+                and int(session_by_id[row["session_id"]]["n_events"]) <= 3
+            }
+        )
+        if empty_version_probe_sessions:
+            lines.append(
+                "   Ghi chú bình thường: client.version rỗng ở phiên chỉ dò cổng "
+                "(n_events ≤ 3, không có client.kex), không phải lỗi mất dữ liệu: "
+                + ", ".join(empty_version_probe_sessions)
+            )
     else:
         lines.append("   Không có.")
 
@@ -883,6 +910,12 @@ def _format_quality_report(
     )
     if transform_quality.get("scenario_warning"):
         lines.append(f"   Cảnh báo gắn kịch bản: {transform_quality['scenario_warning']}")
+    if "scenario_operation_tolerance_seconds" in transform_quality:
+        lines.append(
+            "   Dung sai thao tác bổ sung khi ghép kịch bản: "
+            f"{transform_quality['scenario_operation_tolerance_seconds']}s "
+            "(ngoài |δ|, bù độ chính xác đến giây/độ trễ bắt đầu thao tác)."
+        )
     if "delta_override" in transform_quality:
         lines.append(
             "   Ghi đè clock_offset bằng --delta-seconds: "

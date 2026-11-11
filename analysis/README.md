@@ -60,6 +60,9 @@ khai báo nguồn dữ liệu hoặc đổi thư mục đầu ra. Mặc định,
   `needs_review`; bộ xử lý không tự giả định độ lệch bằng 0. Có thể chỉ định
   `--delta-seconds` để ghi đè offset thiếu hoặc đã ghi; giá trị ghi đè xuất
   hiện trong Mục 6 của báo cáo chất lượng.
+- Khi ghép kịch bản, ngoài `|δ|` còn cộng dung sai thao tác cố định 1 giây
+  để tính đến độ chính xác đến giây của nhật ký và độ trễ bắt đầu kết nối;
+  báo cáo ghi rõ dung sai này. Ghép vẫn yêu cầu đúng nguồn, cổng và thời gian.
 
 ## Bảo vệ log gốc
 
@@ -86,5 +89,7 @@ trong repo, và dữ liệu smoke test trong `evidence/` chỉ được đọc.
   schema và kiểm thử tích hợp trên bản sao tạm.
 - Event tải file và `cowrie.command.failed` không có trong smoke test; các
   trường liên quan cần xác minh thêm trên lượt chạy thật.
+- Phiên SSH chỉ dò cổng có `client.version` rỗng, không có `client.kex` và tối
+  đa 3 event được ghi chú là trường hợp bình thường trong báo cáo chất lượng.
 - Fixture trong `analysis/tests/fixtures/` là dữ liệu tự soạn, KHÔNG phải log
   thật, chưa đối chiếu Cowrie thật và không dùng trong kết quả.

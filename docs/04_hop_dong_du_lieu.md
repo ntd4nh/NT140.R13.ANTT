@@ -147,9 +147,9 @@ Khớp một phiên với nhật ký thử nghiệm theo cả ba điều kiện:
 
 1. `src_ip` của phiên bằng `ip_nguon` của nhật ký.
 2. `dst_port` của phiên bằng cổng suy từ `dich_vu_cong` (ví dụ `ssh/2222` → 2222, `telnet/2223` → 2223).
-3. Thời gian phiên giao với khoảng nhật ký `[bắt đầu − δ, kết thúc + δ]`, trong đó δ là độ lệch giờ đo trước lượt chạy.
+3. Thời gian phiên giao với khoảng nhật ký mở rộng mỗi đầu bởi `|δ| + 1 giây`, trong đó δ là độ lệch giờ đo trước lượt chạy; 1 giây là dung sai thao tác riêng cho độ chính xác đến giây của nhật ký và độ trễ bắt đầu kết nối, không thay thế hay làm thay đổi δ.
 
-Chỉ một kịch bản phù hợp thì gán `scenario_id` và `scenario_match_status=matched`. Không có kết quả hoặc không có file nhật ký thì `scenario_id` để rỗng, trạng thái `unmatched`; có nhiều hơn một kết quả thì không tự chọn, ghi `ambiguous` và liệt kê ứng viên ở `scenario_candidates`. Nếu có nhật ký nhưng thiếu δ hoặc dữ liệu cần để so khớp thì ghi `needs_review`; không tự giả định δ=0. Các phiên unmatched/ambiguous/needs_review được báo để TV3 review. Một kịch bản được phép khớp nhiều phiên (ví dụ KB-02 gồm hai kết nối).
+Chỉ một kịch bản phù hợp thì gán `scenario_id` và `scenario_match_status=matched`. Không có kết quả hoặc không có file nhật ký thì `scenario_id` để rỗng, trạng thái `unmatched`; có nhiều hơn một kết quả thì không tự chọn, ghi `ambiguous` và liệt kê ứng viên ở `scenario_candidates`. Nếu có nhật ký nhưng thiếu δ hoặc dữ liệu cần để so khớp thì ghi `needs_review`; không tự giả định δ=0. Báo cáo chất lượng ghi riêng dung sai thao tác 1 giây khi áp dụng. Các phiên unmatched/ambiguous/needs_review được báo để TV3 review. Một kịch bản được phép khớp nhiều phiên (ví dụ KB-02 gồm hai kết nối).
 
 Không ghép theo IP đơn thuần: KB-02 có thể có nhiều kết nối từ cùng nguồn; KB-05 và lượt SSH lặp KB-01 dùng chung nguồn 2. Ghép IP đơn thuần có thể gán nhầm phiên và làm sai số liệu theo kịch bản.
 
@@ -159,6 +159,7 @@ Không ghép theo IP đơn thuần: KB-02 có thể có nhiều kết nối từ
 - **Phân loại eventid:** dùng đúng allowlist ở mục 4. Sự kiện phân tích đọc trường riêng đã quy định; sự kiện phụ đã biết vẫn giữ trong `events.csv` với `event_type` và trường chung, không đọc trường riêng; eventid ngoài hai nhóm là event lạ thật sự.
 - **Event lạ thật sự:** ghi eventid và `file:dòng` vào báo cáo chất lượng, không ánh xạ, loại khỏi `events.csv` cho tới TV3 review; báo TV1 qua `review/issues.md`. Không coi event phụ đã biết là event lạ.
 - **Thiếu trường bắt buộc:** không tự điền. Giữ rỗng và đếm theo event type trong báo cáo chất lượng. Nếu thiếu `event_type` hoặc thời điểm không thể chuẩn hóa thì không đưa dòng vào `events.csv`; thiếu `session_id` thì không nhóm vào `sessions.csv`; các trường thiếu khác được giữ rỗng để không mất phần còn dùng được. `client_version`/`client_hassh` rỗng trong phiên Telnet không tính là lỗi.
+- `client.version` rỗng ở phiên chỉ dò cổng (tối đa 3 event trong phiên, không có `client.kex`) được ghi chú riêng trong báo cáo là trường hợp bình thường, không phải mất dữ liệu; bộ đếm trường thiếu vẫn giữ nguyên để phản ánh log nguồn.
 - **Trùng:** theo H.4, trùng hoàn toàn là cùng loại sự kiện, phiên, thời điểm và nội dung. Chỉ giữ một bản, đếm bản dư và ghi nguồn các dòng trùng vào báo cáo chất lượng.
 - **Timestamp không parse được:** không thể sắp xếp hoặc so UTC đáng tin cậy; loại khỏi dữ liệu chuẩn hóa và ghi `file:dòng` vào báo cáo.
 - **Báo lỗi:** mỗi lỗi cần tái hiện được; tạo/cập nhật `review/issues.md` với file:dòng, loại/mức độ lỗi, kết quả mong đợi, kết quả thực tế và ảnh hưởng. Không sửa file raw để “chữa” lỗi.

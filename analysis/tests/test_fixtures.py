@@ -397,6 +397,58 @@ def test_logbook_matching_matched_unmatched_and_ambiguous(tmp_path):
     } == {"KB-02"}
 
 
+def test_iss01_single_logbook_row_matches_sessions_with_small_delta(tmp_path):
+    run_dir = tmp_path / "RUN-SMOKE"
+    shutil.copytree(SMOKE_DIR, run_dir)
+    (run_dir / "README.md").unlink()
+    result = _run_cli(
+        run_dir,
+        tmp_path,
+        "--data-origin",
+        "lab",
+        "--logbook",
+        PROJECT_ROOT / "review" / "tai_hien" / "nhat_ky_smoke_tv3.csv",
+        "--delta-seconds",
+        "0.5",
+    )
+    assert result.returncode == 0, result.stderr
+    sessions = _read_csv(_outputs(tmp_path)[1])
+    by_id = {row["session_id"]: row for row in sessions}
+    expected_matches = {
+        "0b41d23a26d6": "S-SSH-SAI-A",
+        "17f75198febf": "S-SSH-DUNG-A",
+        "a19fc2e39c40": "S-SSH-SAI-W",
+        "67886ab3f25e": "S-SSH-DUNG-W",
+        "e02625c405d3": "S-TEL-A",
+        "d976c4e34a27": "S-TEL-W",
+    }
+    for session_id, scenario_id in expected_matches.items():
+        assert by_id[session_id]["scenario_match_status"] == "matched"
+        assert by_id[session_id]["scenario_id"] == scenario_id
+    for session_id in ("3f8ff8b71f88", "0722a6a2bff3"):
+        assert by_id[session_id]["scenario_match_status"] == "unmatched"
+        assert by_id[session_id]["scenario_id"] == ""
+
+    report = _outputs(tmp_path)[2].read_text(encoding="utf-8")
+    assert "Dung sai thao tác bổ sung khi ghép kịch bản: 1.0s" in report
+
+
+def test_iss02_explains_empty_client_version_for_port_scan(tmp_path):
+    run_dir = tmp_path / "RUN-SMOKE"
+    shutil.copytree(SMOKE_DIR, run_dir)
+    (run_dir / "README.md").unlink()
+    result = _run_cli(run_dir, tmp_path, "--data-origin", "lab")
+    assert result.returncode == 0, result.stderr
+
+    report = _outputs(tmp_path)[2].read_text(encoding="utf-8")
+    assert "cowrie.client.version.version: 1" in report
+    assert (
+        "Ghi chú bình thường: client.version rỗng ở phiên chỉ dò cổng "
+        "(n_events ≤ 3, không có client.kex), không phải lỗi mất dữ liệu: "
+        "3f8ff8b71f88"
+    ) in report
+
+
 def test_logbook_without_clock_offset_requires_review(tmp_path):
     run_dir = _copy_fixture(tmp_path)
     (run_dir / "run_note.txt").write_text("run_note without offset\n", encoding="utf-8")
