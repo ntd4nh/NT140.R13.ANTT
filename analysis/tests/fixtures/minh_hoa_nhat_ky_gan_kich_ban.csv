@@ -1,0 +1,6 @@
+run_id,scenario_id,step_no,time_utc_client,may_nguon,ip_nguon,dich_vu_cong,thao_tac,ket_qua_phia_client,nguoi_thuc_hien,ghi_chu
+minh_hoa_RUN-TEST,KB-01,1,2026-01-01T00:00:00Z,VM-A,192.0.2.10,ssh/2222,connect,ok,minh-hoa,
+minh_hoa_RUN-TEST,KB-01,2,2026-01-01T00:00:04+00:00,VM-A,192.0.2.10,ssh/2222,close,ok,minh-hoa,
+minh_hoa_RUN-TEST,KB-01-KHAC,1,2026-01-01T00:00:01Z,VM-A,192.0.2.10,ssh/2222,connect,ok,minh-hoa,
+minh_hoa_RUN-TEST,KB-02,1,2026-01-01T00:02:11Z,VM-A,192.0.2.10,ssh/2222,login,ok,minh-hoa,
+minh_hoa_RUN-TEST,KB-KHONG-KHOP,1,2026-01-01T00:05:01Z,VM-B,192.0.2.1,telnet/2223,connect,ok,minh-hoa,

@@ -1,0 +1,108 @@
+2026-11-10T14:01:15.711389Z [cowrie.core.config#info] Reading configuration from ['etc/cowrie.cfg']
+2026-11-10T14:01:16.043197Z [cowrie.plugin#info] Python Version 3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]
+2026-11-10T14:01:16.043238Z [cowrie.plugin#info] Twisted Version 26.10.0
+2026-11-10T14:01:16.043395Z [cowrie.plugin#info] Cowrie Version 3.1.6
+2026-11-10T14:01:16.043404Z [cowrie.plugin#info] Sensor UUID: 1130b157-dd0d-11f1-b90e-000c29a10206
+2026-11-10T14:01:16.044633Z [cowrie.core.output#info] Loaded output engine: jsonlog
+2026-11-10T14:01:16.046351Z [twisted.scripts._twistd_unix.UnixAppLogger#info] twistd 26.10.0 (/home/cowrie/cowrie-env/bin/python3 3.12.3) starting up.
+2026-11-10T14:01:16.046445Z [twisted.scripts._twistd_unix.UnixAppLogger#info] reactor class: twisted.internet.epollreactor.EPollReactor.
+2026-11-10T14:01:16.067967Z [-] CowrieSSHFactory starting on 2222
+2026-11-10T14:01:16.071979Z [cowrie.ssh.factory.CowrieSSHFactory#info] Starting factory <cowrie.ssh.factory.CowrieSSHFactory object at 0x7dc142551ac0>
+2026-11-10T14:01:16.124517Z [cowrie.ssh.factory.CowrieSSHFactory#info] Ready to accept SSH connections
+2026-11-10T14:01:16.126144Z [-] HoneyPotTelnetFactory starting on 2223
+2026-11-10T14:01:16.126370Z [cowrie.telnet.factory.HoneyPotTelnetFactory#info] Starting factory <cowrie.telnet.factory.HoneyPotTelnetFactory object at 0x7dc142650ad0>
+2026-11-10T14:01:16.198582Z [cowrie.telnet.factory.HoneyPotTelnetFactory#info] Ready to accept Telnet connections
+2026-11-10T14:47:23.163946Z [ssh,3f8ff8b71f88,192.168.239.10] New connection: 192.168.239.10:53412 (192.168.239.20:2222) [session: 3f8ff8b71f88]
+2026-11-10T14:47:23.177143Z [telnet,0722a6a2bff3,192.168.239.10] New connection: 192.168.239.10:48628 (192.168.239.20:2223) [session: 0722a6a2bff3]
+2026-11-10T14:47:23.181799Z [ssh,3f8ff8b71f88,192.168.239.10] Remote SSH version: 
+2026-11-10T14:47:23.185254Z [HoneyPotSSHTransport,0,192.168.239.10] Bad protocol version identification: b''
+2026-11-10T14:47:23.187825Z [HoneyPotSSHTransport,0,192.168.239.10] connection lost
+2026-11-10T14:47:23.188365Z [ssh,3f8ff8b71f88,192.168.239.10] Connection lost after 16 milliseconds
+2026-11-10T14:47:23.191205Z [telnet,0722a6a2bff3,192.168.239.10] Connection lost after 15 milliseconds
+2026-11-10T14:47:44.305225Z [ssh,0b41d23a26d6,192.168.239.10] New connection: 192.168.239.10:37744 (192.168.239.20:2222) [session: 0b41d23a26d6]
+2026-11-10T14:47:44.305762Z [ssh,0b41d23a26d6,192.168.239.10] Remote SSH version: SSH-2.0-OpenSSH_9.6p1 Ubuntu-3ubuntu13.20
+2026-11-10T14:47:44.310561Z [ssh,0b41d23a26d6,192.168.239.10] SSH client hassh fingerprint: aae6b9604f6f3356543709a376d7f657
+2026-11-10T14:47:44.344276Z [ssh,0b41d23a26d6,192.168.239.10] login attempt [labuser/sai-mat-khau] failed
+2026-11-10T14:47:45.348847Z [HoneyPotSSHTransport,1,192.168.239.10] connection lost
+2026-11-10T14:47:45.349138Z [ssh,0b41d23a26d6,192.168.239.10] Connection lost after 1043 milliseconds
+2026-11-10T14:47:47.431620Z [ssh,17f75198febf,192.168.239.10] New connection: 192.168.239.10:37756 (192.168.239.20:2222) [session: 17f75198febf]
+2026-11-10T14:47:47.431842Z [ssh,17f75198febf,192.168.239.10] Remote SSH version: SSH-2.0-OpenSSH_9.6p1 Ubuntu-3ubuntu13.20
+2026-11-10T14:47:47.432858Z [ssh,17f75198febf,192.168.239.10] SSH client hassh fingerprint: aae6b9604f6f3356543709a376d7f657
+2026-11-10T14:47:47.440952Z [ssh,17f75198febf,192.168.239.10] login attempt [labuser/LabOnly-2026] succeeded
+2026-11-10T14:47:47.442307Z [HoneyPotSSHTransport,2,192.168.239.10] Initialized emulated server as architecture: linux-x64-lsb
+2026-11-10T14:47:47.448194Z [HoneyPotSSHTransport,2,192.168.239.10] channel open
+2026-11-10T14:47:47.450134Z [SSHChannel session (0) on SSHService b'ssh-connection' on HoneyPotSSHTransport,2,192.168.239.10] Handling pty request: b'' (0, 0, 0, 0)
+2026-11-10T14:47:47.688607Z [ssh,17f75198febf,192.168.239.10] Terminal Size: 0 0
+2026-11-10T14:47:47.689031Z [ssh,17f75198febf,192.168.239.10] request_env: LANG=en_US.UTF-8
+2026-11-10T14:47:47.689195Z [SSHChannel session (0) on SSHService b'ssh-connection' on HoneyPotSSHTransport,2,192.168.239.10] requesting shell
+2026-11-10T14:47:47.696376Z [ssh,17f75198febf,192.168.239.10] CMD: whoami
+2026-11-10T14:47:47.711130Z [HoneyPotSSHTransport,2,192.168.239.10] Command found: whoami 
+2026-11-10T14:47:47.712755Z [ssh,17f75198febf,192.168.239.10] CMD: exit
+2026-11-10T14:47:47.714789Z [HoneyPotSSHTransport,2,192.168.239.10] Command found: exit 
+2026-11-10T14:47:47.715533Z [HoneyPotSSHTransport,2,192.168.239.10] exitCode: 0
+2026-11-10T14:47:47.716236Z [ssh,17f75198febf,192.168.239.10] Closing TTY Log: var/lib/cowrie/tty/317e7598bd80496dadfad4712f843025b0bd7e99d178458193d0c4bf55bab964 after 26 milliseconds
+2026-11-10T14:47:47.716481Z [HoneyPotSSHTransport,2,192.168.239.10] sending close 0
+2026-11-10T14:47:47.717798Z [HoneyPotSSHTransport,2,192.168.239.10] remote close
+2026-11-10T14:47:47.718143Z [HoneyPotSSHTransport,2,192.168.239.10] Got remote error, code 11 reason: b'disconnected by user'
+2026-11-10T14:47:47.718677Z [HoneyPotSSHTransport,2,192.168.239.10] avatar labuser logging out
+2026-11-10T14:47:47.718757Z [HoneyPotSSHTransport,2,192.168.239.10] connection lost
+2026-11-10T14:47:47.718881Z [ssh,17f75198febf,192.168.239.10] Connection lost after 287 milliseconds
+2026-11-10T14:47:49.819005Z [telnet,e02625c405d3,192.168.239.10] New connection: 192.168.239.10:54054 (192.168.239.20:2223) [session: e02625c405d3]
+2026-11-10T14:47:49.820575Z [telnet,e02625c405d3,192.168.239.10] Telnet WONT NAWS
+2026-11-10T14:47:49.821381Z [telnet,e02625c405d3,192.168.239.10] Telnet DONT ECHO
+2026-11-10T14:47:49.862925Z [telnet,e02625c405d3,192.168.239.10] login attempt [labuser/sai-mat-khau] failed
+2026-11-10T14:47:49.863113Z [CowrieTelnetTransport,1,192.168.239.10] state changed and new state returned
+2026-11-10T14:47:49.906664Z [telnet,e02625c405d3,192.168.239.10] login attempt [labuser/LabOnly-2026] succeeded
+2026-11-10T14:47:49.906837Z [CowrieTelnetTransport,1,192.168.239.10] Initialized emulated server as architecture: linux-x64-lsb
+2026-11-10T14:47:49.908848Z [CowrieTelnetTransport,1,192.168.239.10] state changed and new state returned
+2026-11-10T14:47:51.933996Z [telnet,e02625c405d3,192.168.239.10] CMD: whoami
+2026-11-10T14:47:51.936348Z [CowrieTelnetTransport,1,192.168.239.10] Command found: whoami 
+2026-11-10T14:47:52.968339Z [telnet,e02625c405d3,192.168.239.10] Telnet DONT SGA
+2026-11-10T14:47:53.009577Z [telnet,e02625c405d3,192.168.239.10] CMD: exit
+2026-11-10T14:47:53.011615Z [CowrieTelnetTransport,1,192.168.239.10] Command found: exit 
+2026-11-10T14:47:53.011906Z [CowrieTelnetTransport,1,192.168.239.10] Process ended with exit code 0. Telnet session disconnected
+2026-11-10T14:47:53.012574Z [telnet,e02625c405d3,192.168.239.10] Closing TTY Log: var/lib/cowrie/tty/317e7598bd80496dadfad4712f843025b0bd7e99d178458193d0c4bf55bab964 after 3105 milliseconds
+2026-11-10T14:47:53.012706Z [telnet,e02625c405d3,192.168.239.10] Connection lost after 3194 milliseconds
+2026-11-10T14:48:03.087603Z [ssh,a19fc2e39c40,192.168.239.1] New connection: 192.168.239.1:52650 (192.168.239.20:2222) [session: a19fc2e39c40]
+2026-11-10T14:48:03.088014Z [ssh,a19fc2e39c40,192.168.239.1] Remote SSH version: SSH-2.0-OpenSSH_10.5
+2026-11-10T14:48:03.090720Z [ssh,a19fc2e39c40,192.168.239.1] SSH client hassh fingerprint: eeca2460550b9ded084ecf2f70a75356
+2026-11-10T14:48:03.154686Z [ssh,a19fc2e39c40,192.168.239.1] login attempt [labuser/sai-mat-khau] failed
+2026-11-10T14:48:04.158003Z [HoneyPotSSHTransport,3,192.168.239.1] connection lost
+2026-11-10T14:48:04.158212Z [ssh,a19fc2e39c40,192.168.239.1] Connection lost after 1070 milliseconds
+2026-11-10T14:48:06.279619Z [ssh,67886ab3f25e,192.168.239.1] New connection: 192.168.239.1:52651 (192.168.239.20:2222) [session: 67886ab3f25e]
+2026-11-10T14:48:06.279976Z [ssh,67886ab3f25e,192.168.239.1] Remote SSH version: SSH-2.0-OpenSSH_10.5
+2026-11-10T14:48:06.282094Z [ssh,67886ab3f25e,192.168.239.1] SSH client hassh fingerprint: eeca2460550b9ded084ecf2f70a75356
+2026-11-10T14:48:06.317209Z [ssh,67886ab3f25e,192.168.239.1] login attempt [labuser/LabOnly-2026] succeeded
+2026-11-10T14:48:06.317409Z [HoneyPotSSHTransport,4,192.168.239.1] Initialized emulated server as architecture: linux-x64-lsb
+2026-11-10T14:48:06.318570Z [HoneyPotSSHTransport,4,192.168.239.1] channel open
+2026-11-10T14:48:06.319642Z [SSHChannel session (0) on SSHService b'ssh-connection' on HoneyPotSSHTransport,4,192.168.239.1] Handling pty request: b'xterm-256color' (0, 0, 0, 0)
+2026-11-10T14:48:06.610283Z [ssh,67886ab3f25e,192.168.239.1] Terminal Size: 0 0
+2026-11-10T14:48:06.610482Z [SSHChannel session (0) on SSHService b'ssh-connection' on HoneyPotSSHTransport,4,192.168.239.1] requesting shell
+2026-11-10T14:48:06.611450Z [ssh,67886ab3f25e,192.168.239.1] CMD: whoami
+2026-11-10T14:48:06.613359Z [HoneyPotSSHTransport,4,192.168.239.1] Command found: whoami 
+2026-11-10T14:48:06.613721Z [ssh,67886ab3f25e,192.168.239.1] CMD: exit
+2026-11-10T14:48:06.615300Z [HoneyPotSSHTransport,4,192.168.239.1] Command found: exit 
+2026-11-10T14:48:06.615496Z [HoneyPotSSHTransport,4,192.168.239.1] exitCode: 0
+2026-11-10T14:48:06.615727Z [ssh,67886ab3f25e,192.168.239.1] Closing TTY Log: var/lib/cowrie/tty/317e7598bd80496dadfad4712f843025b0bd7e99d178458193d0c4bf55bab964 after 5 milliseconds
+2026-11-10T14:48:06.615768Z [HoneyPotSSHTransport,4,192.168.239.1] sending close 0
+2026-11-10T14:48:06.616732Z [HoneyPotSSHTransport,4,192.168.239.1] remote close
+2026-11-10T14:48:06.616823Z [HoneyPotSSHTransport,4,192.168.239.1] Got remote error, code 11 reason: b'disconnected by user'
+2026-11-10T14:48:06.616975Z [HoneyPotSSHTransport,4,192.168.239.1] avatar labuser logging out
+2026-11-10T14:48:06.617025Z [HoneyPotSSHTransport,4,192.168.239.1] connection lost
+2026-11-10T14:48:06.617096Z [ssh,67886ab3f25e,192.168.239.1] Connection lost after 337 milliseconds
+2026-11-10T14:48:13.603771Z [telnet,d976c4e34a27,192.168.239.1] New connection: 192.168.239.1:52652 (192.168.239.20:2223) [session: d976c4e34a27]
+2026-11-10T14:48:13.605068Z [telnet,d976c4e34a27,192.168.239.1] Telnet WONT NAWS
+2026-11-10T14:48:13.606267Z [telnet,d976c4e34a27,192.168.239.1] Telnet DONT ECHO
+2026-11-10T14:48:13.647414Z [telnet,d976c4e34a27,192.168.239.1] login attempt [labuser/sai-mat-khau] failed
+2026-11-10T14:48:13.647611Z [CowrieTelnetTransport,2,192.168.239.1] state changed and new state returned
+2026-11-10T14:48:13.690722Z [telnet,d976c4e34a27,192.168.239.1] login attempt [labuser/LabOnly-2026] succeeded
+2026-11-10T14:48:13.690827Z [CowrieTelnetTransport,2,192.168.239.1] Initialized emulated server as architecture: linux-x64-lsb
+2026-11-10T14:48:13.691994Z [CowrieTelnetTransport,2,192.168.239.1] state changed and new state returned
+2026-11-10T14:48:15.649550Z [telnet,d976c4e34a27,192.168.239.1] CMD: whoami
+2026-11-10T14:48:15.651639Z [CowrieTelnetTransport,2,192.168.239.1] Command found: whoami 
+2026-11-10T14:48:16.649952Z [telnet,d976c4e34a27,192.168.239.1] Telnet DONT SGA
+2026-11-10T14:48:16.691808Z [telnet,d976c4e34a27,192.168.239.1] CMD: exit
+2026-11-10T14:48:16.693949Z [CowrieTelnetTransport,2,192.168.239.1] Command found: exit 
+2026-11-10T14:48:16.694099Z [CowrieTelnetTransport,2,192.168.239.1] Process ended with exit code 0. Telnet session disconnected
+2026-11-10T14:48:16.694708Z [telnet,d976c4e34a27,192.168.239.1] Closing TTY Log: var/lib/cowrie/tty/317e7598bd80496dadfad4712f843025b0bd7e99d178458193d0c4bf55bab964 after 3003 milliseconds
+2026-11-10T14:48:16.694801Z [telnet,d976c4e34a27,192.168.239.1] Connection lost after 3091 milliseconds
