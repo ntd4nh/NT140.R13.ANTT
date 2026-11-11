@@ -1,0 +1,9 @@
+session_id,run_id,scenario_id,scenario_match_status,scenario_candidates,src_ip,protocol,dst_port,start_utc,end_utc,duration_ms,duration_source,n_events,n_login_failed,n_login_success,n_commands,commands,has_download,closed_properly,client_version,data_origin
+0722a6a2bff3,RUN-SMOKE,,unmatched,,192.168.239.10,telnet,2223,2026-11-10T14:47:23.176806Z,2026-11-10T14:47:23.191097Z,15,tool,2,0,0,0,[],false,true,,lab
+0b41d23a26d6,RUN-SMOKE,,unmatched,,192.168.239.10,ssh,2222,2026-11-10T14:47:44.305094Z,2026-11-10T14:47:45.349007Z,1043,tool,5,1,0,0,[],false,true,SSH-2.0-OpenSSH_9.6p1 Ubuntu-3ubuntu13.20,lab
+17f75198febf,RUN-SMOKE,,unmatched,,192.168.239.10,ssh,2222,2026-11-10T14:47:47.431475Z,2026-11-10T14:47:47.718796Z,287,tool,11,0,1,2,"[""whoami"",""exit""]",false,true,SSH-2.0-OpenSSH_9.6p1 Ubuntu-3ubuntu13.20,lab
+3f8ff8b71f88,RUN-SMOKE,,unmatched,,192.168.239.10,ssh,2222,2026-11-10T14:47:23.158579Z,2026-11-10T14:47:23.188133Z,16,tool,3,0,0,0,[],false,true,,lab
+67886ab3f25e,RUN-SMOKE,,unmatched,,192.168.239.1,ssh,2222,2026-11-10T14:48:06.279450Z,2026-11-10T14:48:06.617057Z,337,tool,10,0,1,2,"[""whoami"",""exit""]",false,true,SSH-2.0-OpenSSH_10.5,lab
+a19fc2e39c40,RUN-SMOKE,,unmatched,,192.168.239.1,ssh,2222,2026-11-10T14:48:03.086887Z,2026-11-10T14:48:04.158156Z,1070,tool,5,1,0,0,[],false,true,SSH-2.0-OpenSSH_10.5,lab
+d976c4e34a27,RUN-SMOKE,,unmatched,,192.168.239.1,telnet,2223,2026-11-10T14:48:13.603598Z,2026-11-10T14:48:16.694771Z,3091,tool,11,1,1,2,"[""whoami"",""exit""]",false,true,,lab
+e02625c405d3,RUN-SMOKE,,unmatched,,192.168.239.10,telnet,2223,2026-11-10T14:47:49.818860Z,2026-11-10T14:47:53.012672Z,3194,tool,11,1,1,2,"[""whoami"",""exit""]",false,true,,lab

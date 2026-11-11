@@ -1,0 +1,57 @@
+# date -u: 2026-11-11T11:00:10Z
+$ mkdir -p <TMP>/RUN-SMOKE
+exit=0
+$ cp -r evidence/smoke_test/{cowrie.json,cowrie.log,tty,SHA256SUMS} <TMP>/RUN-SMOKE/
+exit=0
+$ ls -R <TMP>/RUN-SMOKE
+.:
+SHA256SUMS
+cowrie.json
+cowrie.log
+tty
+
+./tty:
+317e7598bd80496dadfad4712f843025b0bd7e99d178458193d0c4bf55bab964
+$ (cd <TMP>/RUN-SMOKE && sha256sum -c SHA256SUMS)
+./cowrie.json: OK
+./cowrie.log: OK
+./tty/317e7598bd80496dadfad4712f843025b0bd7e99d178458193d0c4bf55bab964: OK
+exit=0
+$ .venv/Scripts/python.exe -m analysis.process_run --run-dir <TMP>/RUN-SMOKE --data-origin lab --out-processed <TMP>/out-smoke
+OK: cowrie.json
+OK: cowrie.log
+OK: tty/317e7598bd80496dadfad4712f843025b0bd7e99d178458193d0c4bf55bab964
+events.csv: <TMP>/out-smoke/events.csv
+sessions.csv: <TMP>/out-smoke/sessions.csv
+bao_cao_chat_luong.txt: <TMP>/out-smoke/bao_cao_chat_luong.txt
+exit=0
+$ python -I review/tai_hien/dem_doc_lap.py <TMP>/RUN-SMOKE <TMP>/out-smoke
+Sự kiện (dòng JSON hợp lệ): 58
+Phiên (session khác nhau): 8
+Lần đăng nhập: thất bại 4, thành công 4
+Lệnh (command.input): 8, lệnh không hỗ trợ (command.failed): 0
+  cowrie.client.kex: 4
+  cowrie.client.size: 2
+  cowrie.client.var: 1
+  cowrie.client.version: 5
+  cowrie.command.input: 8
+  cowrie.log.closed: 4
+  cowrie.login.failed: 4
+  cowrie.login.success: 4
+  cowrie.session.closed: 8
+  cowrie.session.connect: 8
+  cowrie.session.params: 4
+  cowrie.telnet.option: 6
+events.csv: 58 dòng; sessions.csv: 8 phiên
+KHỚP
+exit=0
+$ (cd evidence/smoke_test && sha256sum -c SHA256SUMS)
+./cowrie.json: OK
+./cowrie.log: OK
+./tty/317e7598bd80496dadfad4712f843025b0bd7e99d178458193d0c4bf55bab964: OK
+exit=0
+$ git status --short evidence/
+?? evidence/doi_chieu_smoke_TV4/
+?? evidence/van_hanh_TV4/
+exit=0
+# date -u: 2026-11-11T11:00:11Z

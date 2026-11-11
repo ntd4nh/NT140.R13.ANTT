@@ -1,0 +1,37 @@
+.F...........F.                                                          [100%]
+================================== FAILURES ===================================
+_______________ test_processor_fixture_and_does_not_change_raw ________________
+
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-51/test_processor_fixture_and_doe0')
+
+    def test_processor_fixture_and_does_not_change_raw(tmp_path):
+        raw_before = _snapshot_raw()
+        issues_path = PROJECT_ROOT / "review" / "issues.md"
+        issues_before = issues_path.read_bytes() if issues_path.is_file() else None
+        run_dir = _copy_fixture(tmp_path)
+        result = _run_cli(run_dir, tmp_path)
+>       assert result.returncode == 0, result.stderr
+E       AssertionError: L\u1ed7i: SHA256SUMS kh\xf4ng kh\u1edbp; d\u1eebng tr\u01b0\u1edbc khi x\u1eed l\xfd log.
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['D:\\\\Study\\\\HK5\\\\ATM\\\\NT140.R13.ANTT\\\\.venv\\\\Scripts\\\\python.exe', '-m', 'analysis.process_run'...='FAIL: cowrie.json\\nFAIL: cowrie.json.2026-01-01\\n', stderr='L\u1ed7i: SHA256SUMS kh\xf4ng kh\u1edbp; d\u1eebng tr\u01b0\u1edbc khi x\u1eed l\xfd log.\\n').returncode
+
+analysis\tests\test_fixtures.py:122: AssertionError
+________________________ test_outputs_are_reproducible ________________________
+
+tmp_path = WindowsPath('C:/Users/<user>/AppData/Local/Temp/pytest-of-<user>/pytest-51/test_outputs_are_reproducible0')
+
+    def test_outputs_are_reproducible(tmp_path):
+        run_dir = _copy_fixture(tmp_path)
+        first = _run_cli(run_dir, tmp_path)
+>       assert first.returncode == 0, first.stderr
+E       AssertionError: L\u1ed7i: SHA256SUMS kh\xf4ng kh\u1edbp; d\u1eebng tr\u01b0\u1edbc khi x\u1eed l\xfd log.
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['D:\\\\Study\\\\HK5\\\\ATM\\\\NT140.R13.ANTT\\\\.venv\\\\Scripts\\\\python.exe', '-m', 'analysis.process_run'...='FAIL: cowrie.json\\nFAIL: cowrie.json.2026-01-01\\n', stderr='L\u1ed7i: SHA256SUMS kh\xf4ng kh\u1edbp; d\u1eebng tr\u01b0\u1edbc khi x\u1eed l\xfd log.\\n').returncode
+
+analysis\tests\test_fixtures.py:565: AssertionError
+=========================== short test summary info ===========================
+FAILED analysis/tests/test_fixtures.py::test_processor_fixture_and_does_not_change_raw
+FAILED analysis/tests/test_fixtures.py::test_outputs_are_reproducible - Asser...
+2 failed, 13 passed in 5.38s

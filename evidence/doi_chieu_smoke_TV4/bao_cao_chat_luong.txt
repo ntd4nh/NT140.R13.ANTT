@@ -1,0 +1,36 @@
+run_id: RUN-SMOKE
+data_origin: lab
+1. Đầu vào và SHA-256
+   File log: cowrie.json
+   OK: cowrie.json
+   OK: cowrie.log
+   OK: tty/317e7598bd80496dadfad4712f843025b0bd7e99d178458193d0c4bf55bab964
+2. Đọc dòng và khử trùng
+   Dòng vật lý: 58
+   JSON hợp lệ: 58
+   JSON hỏng: 0
+   Dòng trống: 0
+   Bản trùng dư đã loại: 0
+3. Phân loại sự kiện
+   Giữ - analysis: 45
+   Giữ - known_auxiliary: 13
+   Event lạ bị loại: 0
+   Không có event lạ; known_auxiliary không tính là event lạ.
+4. Trường bắt buộc thiếu theo event_type
+   cowrie.client.version.version: 1
+5. Timestamp lỗi
+   Thiếu timestamp: 0
+   Không parse được: 0
+6. Phiên, suy luận và đơn vị đếm
+   Phiên tổng: 8
+   scenario unmatched: 8
+   scenario ambiguous: 0
+   scenario needs_review: 0
+   protocol suy từ cổng (event): 0
+   duration tự tính (event đóng phiên): 0
+   Đơn vị đếm: sự kiện = dòng JSON; lần đăng nhập = event login.failed/success; phiên = session_id duy nhất.
+   Sự kiện giữ trong events.csv: 58
+   Lần đăng nhập giữ: 8
+   Phiên giữ trong sessions.csv: 8
+   Cảnh báo gắn kịch bản: Không có --logbook; scenario_id để rỗng và mọi phiên unmatched.
+7. Báo lỗi review: review/issues.md (cần cập nhật khi có issue)

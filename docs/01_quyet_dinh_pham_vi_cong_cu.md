@@ -1,10 +1,35 @@
 # Quyết định phạm vi và công cụ (WP-01)
 
-**Trạng thái:** phần công cụ (TV1) đã soạn, chờ TV3 review · phần phạm vi (TV4) chưa có · phần trường dữ liệu chờ TV2 xác nhận
+**Trạng thái:** phần công cụ (TV1) đã soạn, chờ TV3 review · phần phạm vi (TV4): bản đề xuất của TV4, chưa được nhóm thống nhất · phần trường dữ liệu chờ TV2 xác nhận
 
 ## 1. Phạm vi và câu hỏi nghiên cứu (TV4)
 
-[TV4 điền: bản chốt Q1–Q3, phạm vi trong/ngoài. Bản nháp ở mục A của kế hoạch.]
+**Trạng thái:** bản đề xuất của TV4 (có AI hỗ trợ), ngày 2026-11-11, **chưa được nhóm thống nhất**. Bản nháp gốc ở mục A của kế hoạch. O1–O7 là các đầu ra ở mục H.5 của kế hoạch.
+
+| | Câu hỏi | Trả lời bằng |
+| --- | --- | --- |
+| **Q1** | Với kết nối, đăng nhập, lệnh và tải tệp có kiểm soát, Cowrie ghi được gì, chi tiết tới đâu? Thao tác hay phản hồi nào cho thấy giới hạn hoặc điểm lộ của shell giả? | O2, O5, O7 |
+| **Q2** | Có dựng lại được diễn biến từng phiên và đối chiếu khớp với nhật ký thực nghiệm (nguồn, dịch vụ, thứ tự thao tác, thời gian) không? | O1, O4, O5 |
+| **Q3** | Từ dữ liệu thu được, mô tả được những nhóm hành vi và observable nào; tới đâu thì đủ căn cứ đề xuất mapping ATT&CK? | O3, kế hoạch H.6–H.8 |
+
+**Trong phạm vi:**
+
+- Một honeypot Cowrie chế độ shell (`backend = shell`), hai dịch vụ SSH (2222) và Telnet (2223).
+- Hai nguồn trong lab host-only: VM-A và máy host.
+- Tương tác có kiểm soát theo kịch bản (`docs/03_kich_ban_thu_nghiem.md`), chỉ dùng thao tác SSH/Telnet thông thường.
+- Log gốc được bảo toàn (SHA-256, không sửa); xử lý và báo cáo chạy lại được từ log gốc.
+
+**Ngoài phạm vi:** đưa honeypot ra Internet; malware thật; SIEM; cloud trả phí; AI/ML; chế độ proxy chuyển tiếp tới hệ điều hành thật.
+
+**Phạm vi buổi báo cáo tiến độ và đích đến toàn đề tài:**
+
+| | Buổi báo cáo tiến độ | Toàn đề tài |
+| --- | --- | --- |
+| Q1 | Bảng sự kiện theo kịch bản và đối chiếu nhật ký ↔ log của ít nhất một lượt chạy; 1–2 điểm lộ có căn cứ | Bảng điểm lộ O7 đầy đủ (so transcript KB-03 với máy thật); thêm KB-04 tải tệp |
+| Q2 | Bảng phiên O1, timeline một phiên O4, bảng đối chiếu O5 | Nhiều lượt chạy; kiểm thử tích hợp độc lập (WP-09) |
+| Q3 | Ma trận nguồn × dịch vụ O6; ứng viên mapping ghi "dự kiến" | Phân loại B1–B5 có đánh giá, observable có ngữ cảnh, mapping ATT&CK đã đối chiếu trang chính thức |
+
+**Giới hạn phải nói rõ:** dữ liệu do nhóm tự tạo theo kịch bản, cỡ mẫu nhỏ; shell là giả lập; IP trong lab không phải IOC độc hại; dữ liệu lab không chứng minh ý định hay hành vi của kẻ tấn công trên Internet.
 
 ## 2. Quyết định công cụ (TV1)
 
