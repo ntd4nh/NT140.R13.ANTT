@@ -19,7 +19,7 @@ Thiếu một cột thì bộ xử lý dừng với lỗi "Nhật ký thiếu c�
 | Cột | Cách ghi | Ví dụ |
 | --- | --- | --- |
 | `run_id` | Trùng **đúng** tên thư mục `data/raw/RUN-xx`. Dòng có `run_id` khác bị bỏ qua (`pr:561–562`) | `RUN-01` |
-| `scenario_id` | `KB-01`, `KB-02`, `KB-03`, `KB-04`, `KB-05`. Lượt lặp KB-01 từ Host vẫn ghi `KB-01` | `KB-01` |
+| `scenario_id` | `KB-01`, `KB-02`, `KB-03`, `KB-04`, `KB-05`, `KB-06`, `KB-07`, `KB-08`, `KB-09` (KB-10 dự kiến). Lượt lặp KB-01 từ Host vẫn ghi `KB-01`. Bộ xử lý của TV2 **không** giới hạn danh sách này (`analysis/process_run.py`, lấy `scenario_id` từ nhật ký), nên thêm KB mới không phải sửa mã TV2 | `KB-06` |
 | `step_no` | Số nguyên: `0` là dòng bắt đầu; `1..n` theo bảng bước trong `docs/03_kich_ban_thu_nghiem.md`; dòng kết thúc là số cuối của bảng | `0` |
 | `time_utc_client` | ISO 8601 UTC có `Z`, tới mili giây, lấy bằng đồng hồ máy nguồn **ngay lúc gửi** | `2026-11-11T08:15:02.123Z` |
 | `may_nguon` | `VM-A` hoặc `Host` | `VM-A` |
@@ -70,7 +70,7 @@ Bộ xử lý **không** dịch đồng hồ theo dấu của offset, chỉ dùn
 nghỉ giữa dòng KET_THUC của kịch bản trước và dòng BAT_DAU của kịch bản sau ≥ max(10 s, 2×|δ| + 2 s)
 ```
 
-Cặp cần chú ý trong một RUN: KB-01 → KB-02 → KB-03 (cùng VM-A, cùng `ssh/2222`). KB-05 (`telnet/2223`) và KB-01 lặp từ Host (`.1`, `ssh/2222`) khác bộ khóa với nhau và với VM-A, nhưng vẫn giữ khoảng nghỉ cho dễ đọc.
+Cặp cần chú ý trong một RUN mở rộng (docs/03 mục 0.4): KB-01 → KB-02 → KB-06 → KB-07 → KB-03 → KB-08 đều cùng VM-A, cùng `ssh/2222`; giữ khoảng nghỉ cho **mọi** cặp liền nhau. KB-09 (`telnet/2223` từ VM-A), KB-05 (`telnet/2223` từ Host) và KB-01 lặp từ Host (`.1`, `ssh/2222`) khác bộ khóa với nhau và với VM-A, nhưng vẫn giữ khoảng nghỉ cho dễ đọc. Các KB cùng nguồn/cổng nhưng **khác `scenario_id`** có cửa sổ riêng (mục 7), không bị gộp — vẫn không chạy lại cùng một `scenario_id` hai lần trong một RUN.
 
 ## 5. Độ lệch giờ (`clock_offset_s`)
 

@@ -799,6 +799,12 @@ Một phiên có thể mang nhiều nhãn. Với dữ liệu lab, nhãn mô tả
 | KB-03 | B3 (thêm B2 nếu phiên có lần đăng nhập sai) |
 | KB-04 | B4 |
 | KB-05 | B2 + B3 |
+| KB-06 (rải mật khẩu) | B2 (kiểu rải: một password, nhiều username, nhiều phiên) |
+| KB-07 (bot exec) | B3 (thêm thuộc tính "tự động": gửi lệnh kèm, phiên ngắn, không có kích thước terminal) |
+| KB-08 (duy trì truy cập/xóa dấu vết) | B5 |
+| KB-09 (botnet IoT, Telnet từ VM-A) | B2 + B3 |
+
+Các nhãn kỳ vọng của KB-06..KB-09 ở trạng thái **dự kiến** (mở rộng 2026-11-22, `docs/yeu_cau/2026-11-22_TV1-TV4_mo-rong-kich-ban.md`). KB-08 là kịch bản đầu tiên tạo nhóm **B5**, nhờ đó bộ phân loại B1–B5 mới đánh giá được đủ 5 nhóm. KB-06/B2 (kiểu rải) và KB-02/B2 (kiểu đoán) là hai biến thể của B2, cần quy tắc phân biệt: rải = một password / nhiều username / nhiều phiên; đoán = một username / nhiều password / ít phiên.
 
 Cách làm:
 1. Chạy quy tắc trên `sessions.csv`.
@@ -847,6 +853,17 @@ Lưu ý:
 - Dữ liệu lab do nhóm tạo theo kịch bản, nên mapping thể hiện **phương pháp gắn hành vi với kỹ thuật**, không phải phát hiện TTP của một attacker thật.
 - Tài liệu *Best Practices for MITRE ATT&CK Mapping* (CISA, 2023) cảnh báo lỗi "leaping to conclusions", tức chốt mapping khi chưa đủ bằng chứng. Khi thiếu chi tiết, tài liệu khuyên chỉ dừng ở mức tactic và thu thêm ngữ cảnh. Nhóm áp dụng đúng nguyên tắc này.
 - Lệnh đào coin hoặc chiếm tài nguyên (T1496.001 Resource Hijacking: Compute Hijacking, tactic Impact) chỉ được nhắc tới nếu xuất hiện trong dữ liệu tham khảo. Kịch bản lab không tạo hành vi này.
+
+**Kịch bản nào tạo kỹ thuật nào (mở rộng 2026-11-22, `docs/yeu_cau/2026-11-22_TV1-TV4_mo-rong-kich-ban.md`; mọi dòng trạng thái *dự kiến* cho tới khi có `raw_ref` thật và TV3 kiểm lại):**
+
+| Kịch bản | Kỹ thuật ứng viên (đã có dòng ở bảng trên) |
+| --- | --- |
+| KB-06 Rải mật khẩu | T1110.003 Password Spraying |
+| KB-07 Bot exec | T1059.004 Unix Shell; T1082 System Information Discovery; T1033 System Owner/User Discovery |
+| KB-08 Duy trì truy cập/xóa dấu vết | T1098.004 SSH Authorized Keys; T1053.003 Cron; T1070.003 Clear Command History |
+| KB-09 Botnet IoT (Telnet) | T1110 Brute Force; T1082 System Information Discovery |
+
+Các kỹ thuật này **đã có** trong bảng H.8 ở trên nhưng trước đây chưa kịch bản nào tạo ra (nhất là nhóm Persistence/Stealth của KB-08); các KB mới cung cấp sự kiện làm căn cứ khi RUN có log thật. KB-10 (tùy chọn, chưa triển khai) sẽ ứng với T1110.004 Credential Stuffing.
 
 ### H.9. Mẫu security report cuối
 

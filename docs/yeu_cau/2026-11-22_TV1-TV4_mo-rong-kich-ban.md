@@ -1,7 +1,7 @@
 # Yêu cầu: mở rộng kịch bản tấn công SSH (và Telnet) vào honeypot
 
 **Từ:** TV1 · **Gửi:** TV4 (người viết `docs/03_kich_ban_thu_nghiem.md`) · **Review:** TV3 · **Ngày:** 2026-11-22
-**Trạng thái:** chờ TV4 nhận
+**Trạng thái:** TV4 đã làm xong (2026-11-22) — thêm KB-06..KB-09 vào `docs/03` + `kb_vma.py`; chờ TV3 review rồi TV1 chạy phiên chuẩn bị và RUN-01. Báo cáo: `docs/bao_cao_cong_viec/2026-11-22_TV4_WP-04_mo-rong-kich-ban-ssh-telnet.md`.
 
 ## 1. Vì sao cần mở rộng
 
